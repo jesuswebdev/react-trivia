@@ -1,0 +1,1 @@
+export const START_GAME = 'game/ START GAME';

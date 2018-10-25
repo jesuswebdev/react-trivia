@@ -1,28 +1,56 @@
+
+
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import Layout from './layout/Layout';
+import Home from './views/home/Home';
+import Login from './views/login/Login';
+import Register from './views/register/Register';
+import NewGame from './views/new-game/NewGame';
+import Game from './views/game/Game';
+import Scoreboard from './views/scoreboard/Scoreboard';
+
 
 class App extends Component {
   render() {
+
+  	let routes = (
+  			<Switch>
+  				<Route path="/" exact component={Home} />
+	    		<Route path="/iniciarsesion" component={Login} />
+	    		<Route path="/registro" component={Register} />
+	    		<Route path="/posiciones" component={Scoreboard} />
+		    	<Redirect to="/" />
+    		</Switch>
+  		);
+
+  	if (this.props.isAuthenticated) {
+  		routes = (
+  			<Switch>
+  				<Route path="/" exact component={Home} />
+	    		<Route path="/nuevo" component={NewGame} />
+	    		<Route path="/jugar" component={Game} />
+	    		<Route path="/posiciones" component={Scoreboard} />
+		    	<Redirect to="/" />
+    		</Switch>
+  			);
+  	}
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+    	<BrowserRouter>
+    		<Layout>
+    			{routes}
+		    </Layout>
+    	</BrowserRouter>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+	return {
+		isAuthenticated: state.user.token !== null
+	}
+}
+
+export default connect(mapStateToProps)(App);
