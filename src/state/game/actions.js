@@ -1,22 +1,99 @@
 import * as gameActionTypes from './actionTypes';
+import * as uiNewGameActions from '../ui/new-game/actions';
 import axios from 'axios';
+import { API_URL } from '../../config';
 
 export const startGame = (options) => dispatch => {
 
+    dispatch(uiNewGameActions.uiNewGameStartLoadingQuestions());
 	console.log(options)
     const {token} = JSON.parse(localStorage.getItem('userData'));
 
     axios({
         method: 'get',
-        url: `http://localhost:8080/questions/newgame/${options.difficulty}?question_count=${options.question_count}`,
+        url: `${API_URL}/questions/newgame/${options.difficulty}?question_count=${options.question_count}`,
         headers: {
             'Authorization': 'Bearer ' + token
         }
     })
     .then(({data}) => {
-    	console.log(data)
+        console.log(data)
+        dispatch(gameStartSuccess(data))
+        dispatch(uiNewGameActions.uiNewGameFinishLoadingQuestions());
     })
     .catch(({response: {data}}) => {
-    	console.log(data)
+        console.log(data)
+        dispatch(uiNewGameActions.uiNewGameFailLoadingQuestions(data));
     });
+}
+
+export const saveGame = (game) => dispatch => {
+
+    console.log(game);
+    const {token} = JSON.parse(localStorage.getItem('userData'));
+    axios({
+        method: 'post',
+        url: `${API_URL}/games`,
+        data: game,
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then((response) => {
+        console.log(response);
+    })
+    .catch(({response: {data}}) => {
+        console.log(data);
+    })
+}
+
+export const gameStartSuccess = (gameOptions) => {
+    return {
+        type: gameActionTypes.GAME_START_SUCCESS,
+        payload: gameOptions
+    }
+}
+
+export const destroyGame = () => {
+    return {
+        type: gameActionTypes.DESTROY_GAME
+    }
+}
+
+export const startQuestion = () => {
+    return {
+        type: gameActionTypes.START_QUESTION
+    }
+}
+
+export const timerTimedOut = () => {
+    return {
+        type: gameActionTypes.TIMER_TIMED_OUT
+    }
+}
+
+export const selectWrongAnswer = (stats) => {
+    return {
+        type: gameActionTypes.SELECT_WRONG_ANSWER,
+        payload: stats
+    }
+}
+
+export const selectCorrectAnswer = (stats) => {
+    return {
+        type: gameActionTypes.SELECT_CORRECT_ANSWER,
+        payload: stats
+    }
+}
+
+export const setVictory = () => {
+    return {
+        type: gameActionTypes.SET_VICTORY
+    }
+}
+
+export const nextQuestion = () => {
+    return {
+        type: gameActionTypes.NEXT_QUESTION
+    }
 }
