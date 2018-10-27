@@ -5,10 +5,8 @@ import * as gameActions from "../../state/game/actions";
 import * as timerActions from "../../state/timer/actions";
 import StartQuestion from "./start-question/StartQuestion";
 import ShowQuestion from "./show-question/ShowQuestion";
-import TimedOut from "./timed-out/TimedOut";
-import WrongAnswer from "./wrong-answer/WrongAnswer";
 import NextQuestion from "./next-question/NextQuestion";
-import Victory from "./victory/Victory";
+import MessageScreen from "./message-screen/MessageScreen";
 
 class Game extends Component {
   componentWillUnmount() {
@@ -53,7 +51,7 @@ class Game extends Component {
     this.props.startQuestion();
   };
 
-  selectOptionHandler = event => {
+  selectOptionHandler = async (event) => {
     let options = this.props.questions[this.props.currentQuestion].options;
     let correct = options.find(
       o => o.option_id === parseInt(event.target.id, 10)
@@ -66,10 +64,10 @@ class Game extends Component {
     };
 
     if (!correct) {
-      this.props.selectWrongAnswer(stats);
+      await this.props.selectWrongAnswer(stats);
       this.submitGame();
     } else {
-      this.props.selectCorrectAnswer(stats);
+      await this.props.selectCorrectAnswer(stats);
       if (this.props.currentQuestion + 1 === this.props.questions.length) {
         this.props.setVictory();
         this.submitGame();
@@ -102,16 +100,16 @@ class Game extends Component {
       );
     }
     if (this.props.questionStarted && this.props.wrongAnswer) {
-      return <WrongAnswer />;
+      return <MessageScreen>{{title: "¡Respuesta Incorrecta!"}}</MessageScreen>;
     }
     if (this.props.victory) {
-      return <Victory />;
+      return <MessageScreen>{{title: "¡Enhorabuena!", subtitle: "Lograste Completar El Reto"}}</MessageScreen>;
     }
     if (this.props.questionStarted && this.props.correctAnswer) {
       return <NextQuestion goToNextQuestion={this.onClickNextQuestion} />;
     }
     if (this.props.timedOut) {
-      return <TimedOut />;
+      return <MessageScreen>{{title: "¡Se te acabó el tiempo!"}}</MessageScreen>;
     }
 
     return (

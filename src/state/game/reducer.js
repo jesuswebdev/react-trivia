@@ -60,22 +60,7 @@ const timerTimedOut = (state, action) => {
 }
 
 const selectWrongAnswer = (state, action) => {
-
-	let question = state.questions.filter((_, i) => i === action.payload.position);
-	question = question[0];
-	question.answered = true;
-	question.duration = action.payload.duration;
-	question.selected_option = parseInt(action.payload.option, 10);
-
-	let questions = state.questions.map((q, i) => {
-		if(i !== action.payload.position) {
-			return q;
-		}
-		else {
-			return question;
-		}
-	});
-
+	const questions = updateQuestion(state, action.payload);
 	return {
 		...state,
 		selectedWrongAnswer: true,
@@ -84,22 +69,7 @@ const selectWrongAnswer = (state, action) => {
 }
 
 const selectCorrectAnswer = (state, action) => {
-	
-	let question = state.questions.filter((_, i) => i === action.payload.position);
-	question = question[0];
-	question.answered = true;
-	question.duration = action.payload.duration;
-	question.selected_option = parseInt(action.payload.option, 10);
-
-	let questions = state.questions.map((q, i) => {
-		if(i !== action.payload.position) {
-			return q;
-		}
-		else {
-			return question;
-		}
-	});
-
+	const questions = updateQuestion(state, action.payload)
 	return {
 		...state,
 		selectedCorrectAnswer: true,
@@ -124,6 +94,26 @@ const nextQuestion = (state, action) => {
 		selectedWrongAnswer: false,
 		victory: false
 	}
+}
+
+const updateQuestion = (state, payload) => {
+	let [question] = state.questions.filter((_, i) => i === payload.position);
+	question = {
+		...question,
+		answered: true,
+		duration: payload.duration,
+		selected_option: parseInt(payload.option, 10)
+	};
+
+	return state.questions.map((q, i) => {
+		return i !== payload.position ? q : question;
+		// if(i !== payload.position) {
+		// 	return q;
+		// }
+		// else {
+		// 	return question;
+		// }
+	});
 }
 
 const reducer = (state = initialState, action) => {

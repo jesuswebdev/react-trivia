@@ -18,7 +18,6 @@ class NewGame extends Component {
       difficulty: this.state.option,
       question_count: this.state.question_count
     });
-    console.log(this.state);
   };
 
   render() {
@@ -26,36 +25,36 @@ class NewGame extends Component {
       return <Redirect to="/jugar" />;
     }
 
-    let canSubmit = this.state.option !== "default" && this.state.question_count > 0;
+    let canSubmit =
+      this.state.option !== "default" && this.state.question_count > 0;
     return (
       <div className="columns is-mobile is-tablet is-desktop is-centered">
-        <div className="column is-10-mobile is-8-tablet is-6-desktop">
-          <div className="field is-horizontal">
-            <div className="field-label">
+        <div className="column is-10-mobile is-6-tablet is-6-desktop">
+          <div className="box">
+            <h4 className="title is-size-4 has-text-centered">Juego Nuevo</h4>
+            <div className="field">
               <label className="label">Dificultad</label>
-            </div>
-            <div className="field-body">
-              <div className="field">
-                <div className="control">
-                  <div className="select">
-                    <select
-                      name="option"
-                      value={this.state.option}
-                      onChange={this.onSelectHandler}
-                      disabled={this.props.isLoading}>
-                      <option value="default" disabled>
-                        Elige una dificultad
-                      </option>
-                      <option value="easy">Fácil</option>
-                      <option value="medium">Media</option>
-                      <option value="hard">Difícil</option>
-                    </select>
-                  </div>
+              <div className="control">
+                <div className="select is-fullwidth">
+                  <select
+                    name="option"
+                    value={this.state.option}
+                    onChange={this.onSelectHandler}
+                    disabled={this.props.isLoading}>
+                    <option value="default" disabled>
+                      Elige una dificultad
+                    </option>
+                    <option value="easy">Fácil</option>
+                    <option value="medium">Media</option>
+                    <option value="hard">Difícil</option>
+                  </select>
                 </div>
               </div>
-              <div className="field">
-                <div className="control">
-                  <div className="select">
+            </div>
+            <div className="field">
+              <label className="label">Modo de Juego</label>
+              <div className="control">
+              <div className="select is-fullwidth">
                     <select
                       name="question_count"
                       value={this.state.question_count}
@@ -69,22 +68,22 @@ class NewGame extends Component {
                       <option value="50">Extendido (50 preguntas)</option>
                     </select>
                   </div>
-                </div>
               </div>
             </div>
-          </div>
-
+          
           <button
             type="button"
             className={[
               "button",
               "is-link",
+              "is-fullwidth",
               this.props.isLoading ? "is-loading" : ""
             ].join(" ")}
             disabled={!canSubmit || this.props.isLoading}
             onClick={this.onSubmitHandler}>
             Comenzar
           </button>
+          </div>
         </div>
       </div>
     );

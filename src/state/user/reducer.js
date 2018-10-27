@@ -19,14 +19,22 @@ const userLoginSuccess = (state, action) => {
     }
 }
 
+const registerSuccess = (state, action) => {
+    return {
+        ...state,
+        name: action.payload.name
+    }
+}
+
 const logout = (state, action) => {
     return initialState;
 }
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-      case userActionTypes.USER_LOGIN_SUCCESS: return userLoginSuccess(state, action)
-      case userActionTypes.USER_LOGOUT: return logout(state, action)
+      case userActionTypes.USER_LOGIN_SUCCESS: return userLoginSuccess(state, action);
+      case userActionTypes.USER_LOGOUT: return logout(state, action);
+      case userActionTypes.USER_REGISTER_SUCCESS: return registerSuccess(state, action);
       default: return state;
   }
 };

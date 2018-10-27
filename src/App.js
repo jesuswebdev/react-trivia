@@ -8,6 +8,7 @@ import Register from "./views/register/Register";
 import NewGame from "./views/new-game/NewGame";
 import Game from "./views/game/Game";
 import Scoreboard from "./views/scoreboard/Scoreboard";
+import Welcome from "./views/welcome/Welcome";
 
 class App extends Component {
   render() {
@@ -17,6 +18,7 @@ class App extends Component {
         <Route path="/iniciarsesion" component={Login} />
         <Route path="/registro" component={Register} />
         <Route path="/posiciones" component={Scoreboard} />
+        <Route path="/bienvenido" component={Welcome} />
         <Redirect to="/" />
       </Switch>
     );
@@ -35,7 +37,7 @@ class App extends Component {
 
     return (
       <BrowserRouter>
-        <Layout>{routes}</Layout>
+        <Layout modalOpen={this.props.modalOpen}>{routes}</Layout>
       </BrowserRouter>
     );
   }
@@ -43,7 +45,8 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    isAuthenticated: state.user.token !== null
+    isAuthenticated: state.user.token !== null,
+    modalOpen: state.ui.logoutModal.open
   };
 };
 
