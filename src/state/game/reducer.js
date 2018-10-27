@@ -9,7 +9,8 @@ const initialState = {
 	questionStarted: false,
 	selectedCorrectAnswer: false,
 	selectedWrongAnswer: false,
-	victory: false
+	victory: false,
+	stats: null
 }
 
 const gameStartSuccess = (state, action) => {
@@ -107,13 +108,14 @@ const updateQuestion = (state, payload) => {
 
 	return state.questions.map((q, i) => {
 		return i !== payload.position ? q : question;
-		// if(i !== payload.position) {
-		// 	return q;
-		// }
-		// else {
-		// 	return question;
-		// }
 	});
+}
+
+const getGameStatsSuccess = (state, action) => {
+	return {
+		...state,
+		stats: action.payload
+	}
 }
 
 const reducer = (state = initialState, action) => {
@@ -126,6 +128,7 @@ const reducer = (state = initialState, action) => {
 		case gameActionTypes.SELECT_CORRECT_ANSWER: return selectCorrectAnswer(state, action);
 		case gameActionTypes.SET_VICTORY: return setVictory(state, action);
 		case gameActionTypes.NEXT_QUESTION: return nextQuestion(state, action);
+		case gameActionTypes.GET_GAME_STATS_SUCCESS: return getGameStatsSuccess(state, action);
 		default: return state;
 	}
 }

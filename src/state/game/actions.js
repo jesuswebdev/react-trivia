@@ -1,5 +1,6 @@
 import * as gameActionTypes from './actionTypes';
 import * as uiNewGameActions from '../ui/new-game/actions';
+import * as uiGameStatsActions from '../ui/game-stats/actions';
 import axios from 'axios';
 import { API_URL } from '../../config';
 
@@ -96,4 +97,28 @@ export const nextQuestion = () => {
     return {
         type: gameActionTypes.NEXT_QUESTION
     }
+}
+
+const getGameStatsSuccess = (stats) => {
+    return {
+        type: gameActionTypes.GET_GAME_STATS_SUCCESS,
+        payload: stats
+    }
+}
+
+export const getGameStats = () => dispatch => {
+    dispatch(uiGameStatsActions.startLoadingStats());
+
+    axios({
+        method: 'get',
+        url: `${API_URL}/games/stats`,
+    })
+    .then(({data}) => {
+        dispatch(getGameStatsSuccess(data));
+        dispatch(uiGameStatsActions.finishLoadingStats());
+    })
+    .catch(({response: {data}}) => {
+        console.log(data);
+        dispatch(uiGameStatsActions.failLoadingStats(data));
+    })
 }

@@ -9,11 +9,15 @@ const MessageScreen = props => {
           <h1 className="title is-2 has-text-centered">
             {props.children.title}
           </h1>
-          <h1 className="subtitle is-4 has-text-centered">{props.children.subtitle}</h1>
+          {props.children.subtitle && (
+            <h1 className="subtitle is-4 has-text-centered">
+              {props.children.subtitle}
+            </h1>
+          )}
           <Link
             to="/nuevo"
             className="button is-info is-large is-fullwidth is-rounded"
-            style={{marginBottom: '15px', marginTop: '50px'}}>
+            style={{ marginBottom: "15px", marginTop: "50px" }}>
             Jugar otra vez
           </Link>
           <Link
