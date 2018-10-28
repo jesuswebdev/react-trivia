@@ -10,7 +10,8 @@ const initialState = {
 	selectedCorrectAnswer: false,
 	selectedWrongAnswer: false,
 	victory: false,
-	stats: null
+	stats: null,
+	saved: false
 }
 
 const gameStartSuccess = (state, action) => {
@@ -28,7 +29,8 @@ const gameStartSuccess = (state, action) => {
 	return {
 		...state,
 		token: action.payload.game_token,
-		questions
+		questions,
+		saved: false
 	};
 }
 
@@ -118,6 +120,13 @@ const getGameStatsSuccess = (state, action) => {
 	}
 }
 
+const gameSaved = (state, action) => {
+	return {
+		...state,
+		saved: true
+	}
+}
+
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
 		case gameActionTypes.GAME_START_SUCCESS: return gameStartSuccess(state, action);
@@ -129,6 +138,7 @@ const reducer = (state = initialState, action) => {
 		case gameActionTypes.SET_VICTORY: return setVictory(state, action);
 		case gameActionTypes.NEXT_QUESTION: return nextQuestion(state, action);
 		case gameActionTypes.GET_GAME_STATS_SUCCESS: return getGameStatsSuccess(state, action);
+		case gameActionTypes.GAME_SAVED: return gameSaved(state, action);
 		default: return state;
 	}
 }

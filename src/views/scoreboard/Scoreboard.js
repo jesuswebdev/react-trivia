@@ -18,9 +18,10 @@ class Scoreboard extends Component {
       <div className="columns is-mobile is-tablet is-desktop is-centered">
         <div className="column is-10-mobile is-10-tablet is-10-desktop">
           <div className="box">
-            <h1 className="subtitle is-6 has-text-centered">
+            <h1 className="subtitle is-5 has-text-centered">
               Tabla de Posiciones
             </h1>
+            <hr />
             {this.props.loading && (
               <p className="has-text-centered">Cargando...</p>
             )}

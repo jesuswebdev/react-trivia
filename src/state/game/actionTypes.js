@@ -10,3 +10,4 @@ export const SET_VICTORY = 'game/ SET VICTORY';
 export const NEXT_QUESTION = 'game/ NEXT QUESTION';
 
 export const GET_GAME_STATS_SUCCESS = 'game/ GET GAME STATS SUCCESS';
+export const GAME_SAVED = 'game/ GAME SAVED';

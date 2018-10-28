@@ -1,0 +1,3 @@
+export const UI_START_SAVING_GAME = 'ui/ START SAVING GAME';
+export const UI_FINISH_SAVING_GAME = 'ui/ FINISH SAVING GAME';
+export const UI_ERROR_SAVING_GAME = 'ui/ ERROR SAVING GAME';

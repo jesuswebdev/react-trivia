@@ -2,7 +2,6 @@ import React from "react";
 import Aux from "../components/aux/Aux";
 import Header from "./Header";
 import Footer from "./Footer";
-import LogoutModal from "../components/logout-modal/LogoutModal";
 
 const Layout = (props) => {
     return (
@@ -12,7 +11,6 @@ const Layout = (props) => {
           <div className="container">{props.children}</div>
         </section>
         <Footer />
-        {props.modalOpen && <LogoutModal />}
       </Aux>
     );
   

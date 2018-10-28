@@ -1,20 +1,17 @@
 import * as gameActionTypes from './actionTypes';
 import * as uiNewGameActions from '../ui/new-game/actions';
 import * as uiGameStatsActions from '../ui/game-stats/actions';
+import * as uiGameActions from '../ui/game/actions';
 import axios from 'axios';
 import { API_URL } from '../../config';
 
 export const startGame = (options) => dispatch => {
 
     dispatch(uiNewGameActions.uiNewGameStartLoadingQuestions());
-    const {token} = JSON.parse(localStorage.getItem('userData'));
 
     axios({
         method: 'get',
         url: `${API_URL}/questions/newgame/${options.difficulty}?question_count=${options.question_count}`,
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
     })
     .then(({data}) => {
         dispatch(gameStartSuccess(data))
@@ -26,20 +23,33 @@ export const startGame = (options) => dispatch => {
 }
 
 export const saveGame = (game) => dispatch => {
-    const {token} = JSON.parse(localStorage.getItem('userData'));
+    if (!game.name) {
+        game = {
+            token: game.token,
+            questions: game.questions
+        }
+    }
+    dispatch(uiGameActions.uiStartSavingGame());
     axios({
         method: 'post',
         url: `${API_URL}/games`,
-        data: game,
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
+        data: game
     })
     .then((response) => {
+        if (game.name) {
+            dispatch(gameSaved());
+        }
+        dispatch(uiGameActions.uiFinishSavingGame());
     })
     .catch(({response: {data}}) => {
-        
+        dispatch(uiGameActions.uiErrorSavingGame(data));
     })
+}
+
+export const gameSaved = () => {
+    return {
+        type: gameActionTypes.GAME_SAVED
+    }
 }
 
 export const gameStartSuccess = (gameOptions) => {

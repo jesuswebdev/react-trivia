@@ -6,11 +6,11 @@ const addZero = number => {
 
 const transformDate = date => {
   const newDate = new Date(date);
-  const fullDate = `${addZero(newDate.getUTCDate())}-${addZero(
-    newDate.getUTCMonth() + 1
-  )}-${newDate.getUTCFullYear()} a las ${addZero(
-    newDate.getUTCHours()
-  )}:${addZero(newDate.getUTCMinutes())}`;
+  const fullDate = `${addZero(newDate.getDate())}-${addZero(
+    newDate.getMonth() + 1
+  )}-${newDate.getFullYear()} a las ${addZero(
+    newDate.getHours()
+  )}:${addZero(newDate.getMinutes())}`;
   return fullDate;
 };
 
@@ -27,7 +27,7 @@ const ScoresTable = props => {
       <thead>
         <tr>
           <th>#</th>
-          <th>Usuario</th>
+          <th>Jugador</th>
           <th>Duración del Juego</th>
           <th>Jugado el</th>
         </tr>
@@ -37,7 +37,7 @@ const ScoresTable = props => {
           return (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td>{stat.user.name}</td>
+              <td>{stat.user}</td>
               <td>{stat.duration} segundos</td>
               <td>{transformDate(stat.createdAt)}</td>
             </tr>

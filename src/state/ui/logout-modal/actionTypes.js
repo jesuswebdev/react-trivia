@@ -1,2 +1,0 @@
-export const OPEN_LOGOUT_MODAL = 'ui/ OPEN LOGOUT MODAL';
-export const CLOSE_LOGOUT_MODAL = 'ui/ CLOSE LOGOUT MODAL';

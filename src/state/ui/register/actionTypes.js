@@ -1,4 +1,0 @@
-export const UI_START_REGISTER = 'ui/ START REGISTER';
-export const UI_FINISH_REGISTER = 'ui/ FINISH REGISTER';
-export const UI_FAIL_REGISTER = 'ui/ FAIL REGISTER';
-export const UI_RESET_REGISTERED = 'ui/ RESET REGISTERED';

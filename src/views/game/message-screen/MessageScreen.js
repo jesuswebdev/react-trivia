@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Aux from '../../../components/aux/Aux';
 
 const MessageScreen = props => {
   return (
@@ -14,7 +15,13 @@ const MessageScreen = props => {
               {props.children.subtitle}
             </h1>
           )}
-          <Link
+
+          {props.loading && <p className="has-text-centered">Guardando...</p>}
+          {props.error && <div className="notification is-danger">{props.errorMessage}</div>}
+
+          {!props.loading && 
+            <Aux>
+            <Link
             to="/nuevo"
             className="button is-info is-large is-fullwidth is-rounded"
             style={{ marginBottom: "15px", marginTop: "50px" }}>
@@ -25,6 +32,8 @@ const MessageScreen = props => {
             className="button is-info is-large is-fullwidth is-rounded">
             Ir al menú principal
           </Link>
+            </Aux>
+          }
         </div>
       </div>
     </div>

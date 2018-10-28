@@ -9,8 +9,8 @@ class NewGame extends Component {
     question_count: 0
   };
 
-  onSelectHandler = e => {
-    this.setState({ [`${e.target.name}`]: e.target.value });
+  onSelectHandler = ({target: {name, value}}) => {
+    this.setState({ [`${name}`]: value });
   };
 
   onSubmitHandler = () => {
@@ -32,6 +32,7 @@ class NewGame extends Component {
         <div className="column is-10-mobile is-6-tablet is-6-desktop">
           <div className="box">
             <h4 className="title is-size-4 has-text-centered">Juego Nuevo</h4>
+            {this.props.hasError && <div className="notification is-danger has-text-centered">{this.props.errorMessage}</div>}
             <div className="field">
               <label className="label">Dificultad</label>
               <div className="control">
@@ -75,7 +76,7 @@ class NewGame extends Component {
             type="button"
             className={[
               "button",
-              "is-link",
+              "is-info",
               "is-fullwidth",
               this.props.isLoading ? "is-loading" : ""
             ].join(" ")}
@@ -93,7 +94,9 @@ class NewGame extends Component {
 const mapStateToProps = state => {
   return {
     isLoading: state.ui.newGame.loading,
-    gotTheQuestions: state.game.questions.length > 0
+    gotTheQuestions: state.game.questions.length > 0,
+    hasError: state.ui.newGame.error,
+    errorMessage: state.ui.newGame.errorMessage
   };
 };
 
