@@ -22,7 +22,7 @@ class Header extends Component {
           <Link to="/" className="navbar-item">
             React Trivia
           </Link>
-          {this.props.name && (
+          {this.props.name && this.props.isAuthenticated && (
             <span
               role="button"
               id="app-navbar-burger"
@@ -37,7 +37,7 @@ class Header extends Component {
             </span>
           )}
         </div>
-        {this.props.name && (
+        {this.props.name && this.props.isAuthenticated && (
           <div className="navbar-menu" id="app-navbar-menu">
             <div className="navbar-end">
               <div
@@ -57,7 +57,8 @@ class Header extends Component {
 
 const mapStateToProps = state => {
   return {
-    name: state.user.name
+    name: state.user.name,
+    isAuthenticated: state.user.token !== null
   };
 };
 

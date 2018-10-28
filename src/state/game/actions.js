@@ -7,7 +7,6 @@ import { API_URL } from '../../config';
 export const startGame = (options) => dispatch => {
 
     dispatch(uiNewGameActions.uiNewGameStartLoadingQuestions());
-	console.log(options)
     const {token} = JSON.parse(localStorage.getItem('userData'));
 
     axios({
@@ -18,19 +17,15 @@ export const startGame = (options) => dispatch => {
         }
     })
     .then(({data}) => {
-        console.log(data)
         dispatch(gameStartSuccess(data))
         dispatch(uiNewGameActions.uiNewGameFinishLoadingQuestions());
     })
     .catch(({response: {data}}) => {
-        console.log(data)
         dispatch(uiNewGameActions.uiNewGameFailLoadingQuestions(data));
     });
 }
 
 export const saveGame = (game) => dispatch => {
-
-    console.log(game);
     const {token} = JSON.parse(localStorage.getItem('userData'));
     axios({
         method: 'post',
@@ -41,10 +36,9 @@ export const saveGame = (game) => dispatch => {
         }
     })
     .then((response) => {
-        console.log(response);
     })
     .catch(({response: {data}}) => {
-        console.log(data);
+        
     })
 }
 
@@ -118,7 +112,6 @@ export const getGameStats = () => dispatch => {
         dispatch(uiGameStatsActions.finishLoadingStats());
     })
     .catch(({response: {data}}) => {
-        console.log(data);
         dispatch(uiGameStatsActions.failLoadingStats(data));
     })
 }

@@ -17,7 +17,7 @@ class Welcome extends Component {
         <div className="column is-10-mobile is-6-tablet is-6-desktop">
           <div className="box">
             <h1 className="title is-2 has-text-centered">
-              ¡Hola {this.props.name}!
+              ¡Hola, {this.props.name}!
             </h1>
             <h1 className="subtitle is-4 has-text-centered">
               Gracias por registrarte en nuestra plataforma. Ahora puedes

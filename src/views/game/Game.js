@@ -34,7 +34,6 @@ class Game extends Component {
   };
 
   submitGame = () => {
-    console.log(this.prepareGame());
     this.props.saveGame(this.prepareGame());
   };
 
@@ -100,7 +99,8 @@ class Game extends Component {
       );
     }
     if (this.props.questionStarted && this.props.wrongAnswer) {
-      return <MessageScreen>{{title: "¡Respuesta Incorrecta!"}}</MessageScreen>;
+      const {text} = this.props.questions[this.props.currentQuestion].options.find(o => o.correct_answer);
+      return <MessageScreen>{{title: "¡Respuesta Incorrecta!", subtitle: `La respuesta correcta era: ${text}`}}</MessageScreen>;
     }
     if (this.props.victory) {
       return <MessageScreen>{{title: "¡Enhorabuena!", subtitle: "Lograste Completar El Reto"}}</MessageScreen>;

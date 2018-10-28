@@ -1,8 +1,26 @@
 import React from "react";
 
+const addZero = number => {
+  return number < 10 ? "0" + number : number;
+};
+
+const transformDate = date => {
+  const newDate = new Date(date);
+  const fullDate = `${addZero(newDate.getUTCDate())}-${addZero(
+    newDate.getUTCMonth() + 1
+  )}-${newDate.getUTCFullYear()} a las ${addZero(
+    newDate.getUTCHours()
+  )}:${addZero(newDate.getUTCMinutes())}`;
+  return fullDate;
+};
+
 const ScoresTable = props => {
   if (props.children.length === 0) {
-    return <div>Aquí no hay nada</div>;
+    return (
+      <h1 className="subtitle is-5 has-text-centered">
+        Aquí no hay nada para mostrar
+      </h1>
+    );
   }
   return (
     <table className="table is-bordered is-striped is-fullwidth">
@@ -11,17 +29,17 @@ const ScoresTable = props => {
           <th>#</th>
           <th>Usuario</th>
           <th>Duración del Juego</th>
-          <th>Fecha del Juego</th>
+          <th>Jugado el</th>
         </tr>
       </thead>
       <tbody>
         {props.children.map((stat, index) => {
           return (
-            <tr>
+            <tr key={index}>
               <td>{index + 1}</td>
               <td>{stat.user.name}</td>
               <td>{stat.duration} segundos</td>
-              <td>{stat.createdAt}</td>
+              <td>{transformDate(stat.createdAt)}</td>
             </tr>
           );
         })}

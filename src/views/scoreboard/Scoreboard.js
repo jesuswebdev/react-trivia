@@ -6,6 +6,7 @@ import {
   selectDifficulty
 } from "../../state/ui/game-stats/actions";
 import ScoresTable from "./scores-table/ScoresTable";
+import Aux from "../../components/aux/Aux";
 
 class Scoreboard extends Component {
   componentDidMount() {
@@ -19,33 +20,83 @@ class Scoreboard extends Component {
           <div className="box">
             <h1 className="subtitle is-6 has-text-centered">
               Tabla de Posiciones
-              <select
-                value={this.props.selectedDifficulty}
-                onChange={({ target: { value } }) =>
-                  this.props.selectDifficulty(value)
-                }>
-                <option value="easy">Fácil</option>
-                <option value="medium">Media</option>
-                <option value="hard">Difícil</option>
-              </select>
-              <select
-                value={this.props.selectedMode}
-                onChange={({ target: { value } }) =>
-                  this.props.selectMode(value)
-                }>
-                <option value="fast">Rápido</option>
-                <option value="normal">Normal</option>
-                <option value="extended">Extendido</option>
-              </select>
             </h1>
-            {this.props.stats && (
-              <ScoresTable>
-                {
-                  this.props.stats[this.props.selectedDifficulty][
-                    this.props.selectedMode
-                  ]
-                }
-              </ScoresTable>
+            {this.props.loading && (
+              <p className="has-text-centered">Cargando...</p>
+            )}
+
+            {!this.props.loading && (
+              <Aux>
+                <div className="level">
+                  <div className="level-left">
+                    <div className="level-item has-text-centered">
+                      <div className="field is-horizontal">
+                        <div className="field-label is-normal">
+                          <label
+                            className="label"
+                            style={{ minWidth: "100px" }}>
+                            Dificultad
+                          </label>
+                        </div>
+                        <div className="field-body">
+                          <div className="field is-narrow">
+                            <div className="control">
+                              <div className="select is-fullwidth">
+                                <select
+                                  value={this.props.selectedDifficulty}
+                                  onChange={({ target: { value } }) =>
+                                    this.props.selectDifficulty(value)
+                                  }>
+                                  <option value="easy">Fácil</option>
+                                  <option value="medium">Media</option>
+                                  <option value="hard">Difícil</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="level-item has-text-centered">
+                      <div className="field is-horizontal">
+                        <div className="field-label is-normal">
+                          <label
+                            className="label"
+                            style={{ minWidth: "140px" }}>
+                            Modo de Juego
+                          </label>
+                        </div>
+                        <div className="field-body">
+                          <div className="field is-narrow">
+                            <div className="control">
+                              <div className="select is-fullwidth">
+                                <select
+                                  value={this.props.selectedMode}
+                                  onChange={({ target: { value } }) =>
+                                    this.props.selectMode(value)
+                                  }>
+                                  <option value="fast">Rápido</option>
+                                  <option value="normal">Normal</option>
+                                  <option value="extended">Extendido</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {this.props.stats && (
+                  <ScoresTable>
+                    {
+                      this.props.stats[this.props.selectedDifficulty][
+                        this.props.selectedMode
+                      ]
+                    }
+                  </ScoresTable>
+                )}
+              </Aux>
             )}
           </div>
         </div>

@@ -41,12 +41,10 @@ export const submitRegister = registerData => dispatch => {
         data: registerData
     })
     .then(({data}) => {
-        console.log(data);
         dispatch(registerSuccess(data));
         dispatch(uiRegisterActions.uiRegisterFinish());
     })
     .catch(({response: {data}}) => {
-        console.log(data);
         dispatch(uiRegisterActions.uiRegisterFail(data));
     })
 }
