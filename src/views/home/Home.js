@@ -16,7 +16,7 @@ const Home = (props) => {
         <Link
           to="/posiciones"
           className="button is-info is-large is-fullwidth is-rounded">
-          Tabla de Posiciones
+          Top 10
         </Link>
       </div>
     </div>

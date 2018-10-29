@@ -115,7 +115,7 @@ export const getGameStats = () => dispatch => {
 
     axios({
         method: 'get',
-        url: `${API_URL}/games/stats`,
+        url: `${API_URL}/games/top`,
     })
     .then(({data}) => {
         dispatch(getGameStatsSuccess(data));
