@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Link } from 'react-router-dom';
 import { getGameStats } from "../../state/game/actions";
 import {
   selectMode,
@@ -22,11 +23,9 @@ class Scoreboard extends Component {
               Tabla de Posiciones
             </h1>
             <hr />
-            {this.props.loading && (
-              <p className="has-text-centered">Cargando...</p>
-            )}
-
-            {!this.props.loading && (
+            {this.props.loading ? 
+              <p className="has-text-centered">Cargando...</p> :
+              !this.props.loading && (
               <Aux>
                 <div className="level">
                   <div className="level-left">
@@ -99,6 +98,9 @@ class Scoreboard extends Component {
                 )}
               </Aux>
             )}
+            <div className="has-text-centered">
+              <Link to="/" className="button is-info">Volver al menú principal</Link>
+            </div>
           </div>
         </div>
       </div>

@@ -7,6 +7,8 @@ const victorySchema = Yup.object().shape({
 	.min(2, 'El nombre es muy corto')
 	.max(16, 'El nombre es muy largo')
 	.required('Debes introducir un nombre')
+	.lowercase()
+	.notOneOf(['admin', 'administrador'], 'Ese nombre no es válido')
 });
 
 const VictoryForm = (props) => {
