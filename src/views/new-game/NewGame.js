@@ -71,7 +71,7 @@ class NewGame extends Component {
                   </div>
               </div>
             </div>
-          
+          {this.props.isLoading && <p className="has-text-centered">Cargando preguntas...</p>}
           <button
             type="button"
             className={[

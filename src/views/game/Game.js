@@ -6,8 +6,8 @@ import * as timerActions from "../../state/timer/actions";
 import StartQuestion from "./start-question/StartQuestion";
 import ShowQuestion from "./show-question/ShowQuestion";
 import NextQuestion from "./next-question/NextQuestion";
-import MessageScreen from "./message-screen/MessageScreen";
-import Victory from './victory/Victory';
+import GameFinished from './game-finished/GameFinished';
+import { TIMER_TIME } from '../../config';
 
 class Game extends Component {
   componentWillUnmount() {
@@ -47,7 +47,7 @@ class Game extends Component {
       this.props.timerTimedOut();
       clearInterval(interval);
       this.submitGame(null);
-    }, 30000);
+    }, TIMER_TIME * 1000);
     this.props.setTimerIds(interval, timeout);
     this.props.startQuestion();
   };
@@ -60,13 +60,12 @@ class Game extends Component {
 
     let stats = {
       position: this.props.currentQuestion,
-      duration: 30 - this.props.timerSeconds,
+      duration: TIMER_TIME - this.props.timerSeconds,
       option: event.target.id
     };
 
     if (!correct) {
       await this.props.selectWrongAnswer(stats);
-      this.submitGame(null);
     } else {
       await this.props.selectCorrectAnswer(stats);
       if (this.props.currentQuestion + 1 === this.props.questions.length) {
@@ -99,23 +98,23 @@ class Game extends Component {
         />
       );
     }
-    if (this.props.questionStarted && this.props.wrongAnswer) {
-      const {text} = this.props.questions[this.props.currentQuestion].options.find(o => o.correct_answer);
-      return <MessageScreen loading={this.props.savingGame} error={this.props.saveGameError} errorMessage={this.props.saveGameErrorMessage} >{{title: "¡Respuesta Incorrecta!", subtitle: `La respuesta correcta era: ${text}`}}</MessageScreen>;
-    }
-    if (this.props.victory) {
-      return <Victory
+    if (this.props.victory || this.props.timedOut) {
+      return <GameFinished
       submitHandler={this.submitGame}
+      timedOut={this.props.timedOut}
       loading={this.props.savingGame}
+      correctAnswers={this.props.totalCorrectAnswers}
+      totalQuestions={this.props.questions.length}
       error={this.props.saveGameError}
       errorMessage={this.props.saveGameErrorMessage}
       gameSaved={this.props.gameSaved}/>;
     }
+    if (this.props.questionStarted && this.props.wrongAnswer) {
+      const {text} = this.props.questions[this.props.currentQuestion].options.find(o => o.correct_answer);
+      return <NextQuestion wrong goToNextQuestion={this.onClickNextQuestion}>{`La respuesta correcta era: ${text}`}</NextQuestion>;
+    }
     if (this.props.questionStarted && this.props.correctAnswer) {
       return <NextQuestion goToNextQuestion={this.onClickNextQuestion} />;
-    }
-    if (this.props.timedOut) {
-      return <MessageScreen loading={this.props.savingGame} error={this.props.saveGameError} errorMessage={this.props.saveGameErrorMessage}>{{title: "¡Se te acabó el tiempo!"}}</MessageScreen>;
     }
 
     return (
@@ -145,7 +144,8 @@ const mapStateToProps = state => {
     gameSaved: state.game.saved,
     savingGame: state.ui.game.loading,
     saveGameError: state.ui.game.error,
-    saveGameErrorMessage: state.ui.game.errorMessage
+    saveGameErrorMessage: state.ui.game.errorMessage,
+    totalCorrectAnswers: state.game.correct_answers
   };
 };
 

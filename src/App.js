@@ -5,6 +5,7 @@ import Home from "./views/home/Home";
 import NewGame from "./views/new-game/NewGame";
 import Game from "./views/game/Game";
 import Scoreboard from "./views/scoreboard/Scoreboard";
+import Contribute from "./views/contribute/Contribute";
 
 class App extends Component {
   render() {
@@ -16,6 +17,7 @@ class App extends Component {
           <Route path="/nuevo" component={NewGame} />
           <Route path="/jugar" component={Game} />
           <Route path="/posiciones" component={Scoreboard} />
+          <Route path="/contribuir" component={Contribute} />
           <Redirect to="/" />
         </Switch>
         </Layout>

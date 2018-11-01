@@ -6,11 +6,8 @@ const addZero = number => {
 
 const transformDate = date => {
   const newDate = new Date(date);
-  const fullDate = `${addZero(newDate.getDate())}-${addZero(
-    newDate.getMonth() + 1
-  )}-${newDate.getFullYear()} a las ${addZero(
-    newDate.getHours()
-  )}:${addZero(newDate.getMinutes())}`;
+  const fullDate = `${addZero(newDate.getHours())}:${addZero(newDate.getMinutes())} del 
+  ${addZero(newDate.getDate())}-${addZero(newDate.getMonth() + 1)}-${newDate.getFullYear()}`;
   return fullDate;
 };
 
@@ -28,8 +25,9 @@ const ScoresTable = props => {
         <tr>
           <th>#</th>
           <th>Jugador</th>
+          <th><abbr title="Respuestas Correctas">RC</abbr></th>
           <th>Duración del Juego</th>
-          <th>Jugado el</th>
+          <th>Fecha</th>
         </tr>
       </thead>
       <tbody>
@@ -38,6 +36,7 @@ const ScoresTable = props => {
             <tr key={index}>
               <td>{index + 1}</td>
               <td>{stat.user}</td>
+              <td>{stat.total_correct_answers}</td>
               <td>{stat.duration} segundos</td>
               <td>{transformDate(stat.createdAt)}</td>
             </tr>

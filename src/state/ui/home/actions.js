@@ -27,11 +27,9 @@ export const pingServer = () => dispatch => {
 		url: `${API_URL}/health`
 	})
 	.then(({data}) => {
-		console.log(data);
 		dispatch(finishPingServer());
 	})
-	.catch(({response: {data} = {}}) => {
-		console.log(data);
-		dispatch(errorPingServer(data));
+	.catch((error) => {
+		dispatch(errorPingServer());
 	})
 }

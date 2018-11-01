@@ -24,20 +24,25 @@ class Home extends Component {
               className="button is-info is-large is-fullwidth is-rounded">
               Jugar
             </Link>
-            <br />
             <Link
               to="/posiciones"
+              style={{margin: '12px 0px'}}
               className="button is-info is-large is-fullwidth is-rounded">
               Top 10
             </Link>
+            <Link
+              to="/contribuir"
+              className="button is-info is-large is-fullwidth is-rounded">
+              Contribuir
+            </Link>
           </div>
         </div>
-        <div className="tags has-addons" style={{paddingTop: '120px', justifyContent: 'center'}}>
+        <div className="tags has-addons" style={{paddingTop: '100px', justifyContent: 'center'}}>
           <span className="tag is-dark">Servidor</span>
           <span className={['tag', 
           this.props.loading ? 'is-info': '',
           this.props.success ? 'is-success' : '',
-          this.props.error ? 'is-danger' : ''].join(' ')}>{this.props.status}</span>
+          this.props.pingError ? 'is-danger' : ''].join(' ')}>{this.props.status}</span>
         </div>
       </Aux>
     );

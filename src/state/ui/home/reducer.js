@@ -3,7 +3,6 @@ import * as actionTypes from './actionTypes';
 const initialState = {
 	loading: false,
 	error: false,
-	errorMessage: '',
 	success: null,
 	status: ''
 };
@@ -13,7 +12,6 @@ const startPingServer = (state, action) => {
 		...state,
 		loading: true,
 		error: false,
-		errorMessage: '',
 		status: 'Consultando...',
 		success: null
 	}
@@ -33,7 +31,6 @@ const errorPingServer = (state, action) => {
 		...state,
 		loading: false,
 		error: true,
-		errorMessage: action.payload.message,
 		status: 'ERROR'
 	}
 };

@@ -1,9 +1,8 @@
 import * as timerActionTypes from "./actionTypes";
+import { TIMER_TIME } from '../../config';
 
 const initialState = {
-  seconds: 30,
-  started: false,
-  stopped: false,
+  seconds: TIMER_TIME,
   intervalId: null,
   timeoutId: null
 };

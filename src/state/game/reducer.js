@@ -11,7 +11,8 @@ const initialState = {
 	selectedWrongAnswer: false,
 	victory: false,
 	stats: null,
-	saved: false
+	saved: false,
+	correct_answers: 0
 }
 
 const gameStartSuccess = (state, action) => {
@@ -76,6 +77,7 @@ const selectCorrectAnswer = (state, action) => {
 	return {
 		...state,
 		selectedCorrectAnswer: true,
+		correct_answers: state.correct_answers + 1,
 		questions
 	}
 }
