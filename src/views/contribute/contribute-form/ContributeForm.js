@@ -268,4 +268,3 @@ const ContributeForm = (props) => {
 };
 
 export default ContributeForm;
-

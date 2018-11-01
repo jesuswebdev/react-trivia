@@ -4,6 +4,7 @@ const Footer = props => {
   return (
     <footer className="footer has-background-dark">
       <div className="content has-text-centered has-text-light">React Trivia 2018</div>
+      <div className="content has-text-centered has-text-light">#gitlogo</div>
     </footer>
   );
 };
