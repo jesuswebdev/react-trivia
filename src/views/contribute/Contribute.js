@@ -21,12 +21,13 @@ class Contribute extends Component {
 
 	render() {
 		return this.props.sent ? 
-			<SuccessScreen /> : 
+			<SuccessScreen reset={this.props.resetQuestionSent} />
+			: 
 			<ContributeForm 
-				loadingCategories={this.props.loadingCategories}
-				categories={this.props.categories}
-				submitHandler={this.submitQuestion}
-				loading={this.props.loading} />
+			loadingCategories={this.props.loadingCategories}
+			categories={this.props.categories}
+			submitHandler={this.submitQuestion}
+			loading={this.props.loading} />
 	}
 }
 
