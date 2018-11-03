@@ -15,6 +15,6 @@ export const uiNewGameFinishLoadingQuestions = () => {
 export const uiNewGameFailLoadingQuestions = (error) => {
     return {
         type: newGameActionTypes.UI_FAIL_LOADING_QUESTIONS,
-        payload: error
+        error
     }
 }

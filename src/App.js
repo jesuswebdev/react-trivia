@@ -12,14 +12,14 @@ class App extends Component {
     return (
       <BrowserRouter>
         <Layout>
-        <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/nuevo" component={NewGame} />
-          <Route path="/jugar" component={Game} />
-          <Route path="/posiciones" component={Scoreboard} />
-          <Route path="/contribuir" component={Contribute} />
-          <Redirect to="/" />
-        </Switch>
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/nuevo" component={NewGame} />
+            <Route path="/jugar" component={Game} />
+            <Route path="/posiciones" component={Scoreboard} />
+            <Route path="/contribuir" component={Contribute} />
+            <Redirect to="/" />
+          </Switch>
         </Layout>
       </BrowserRouter>
     );

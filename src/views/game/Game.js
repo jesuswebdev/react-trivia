@@ -52,16 +52,16 @@ class Game extends Component {
     this.props.startQuestion();
   };
 
-  selectOptionHandler = async (event) => {
+  selectOptionHandler = async ({target: {id}}) => {
     let options = this.props.questions[this.props.currentQuestion].options;
     let correct = options.find(
-      o => o.option_id === parseInt(event.target.id, 10)
+      o => o.option_id === parseInt(id, 10)
     ).correct_answer;
 
     let stats = {
       position: this.props.currentQuestion,
       duration: TIMER_TIME - this.props.timerSeconds,
-      option: event.target.id
+      option: id
     };
 
     if (!correct) {

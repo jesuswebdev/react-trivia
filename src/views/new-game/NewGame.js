@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
-import * as gameActions from "../../state/game/actions";
+import { startGame } from "../../state/game/actions";
 
 class NewGame extends Component {
   state = {
@@ -9,7 +9,7 @@ class NewGame extends Component {
     question_count: 0
   };
 
-  onSelectHandler = ({target: {name, value}}) => {
+  onSelectHandler = ({ target: { name, value } }) => {
     this.setState({ [`${name}`]: value });
   };
 
@@ -32,7 +32,11 @@ class NewGame extends Component {
         <div className="column is-10-mobile is-6-tablet is-6-desktop">
           <div className="box">
             <h4 className="title is-size-4 has-text-centered">Juego Nuevo</h4>
-            {this.props.hasError && <div className="notification is-danger has-text-centered">{this.props.errorMessage}</div>}
+            {this.props.hasError && (
+              <div className="notification is-danger has-text-centered">
+                {this.props.errorMessage}
+              </div>
+            )}
             <div className="field">
               <label className="label">Dificultad</label>
               <div className="control">
@@ -55,35 +59,37 @@ class NewGame extends Component {
             <div className="field">
               <label className="label">Modo de Juego</label>
               <div className="control">
-              <div className="select is-fullwidth">
-                    <select
-                      name="question_count"
-                      value={this.state.question_count}
-                      onChange={this.onSelectHandler}
-                      disabled={this.props.isLoading}>
-                      <option value="0" disabled>
-                        Elige un modo de juego
-                      </option>
-                      <option value="10">Rápido (10 preguntas)</option>
-                      <option value="25">Normal (25 preguntas)</option>
-                      <option value="50">Extendido (50 preguntas)</option>
-                    </select>
-                  </div>
+                <div className="select is-fullwidth">
+                  <select
+                    name="question_count"
+                    value={this.state.question_count}
+                    onChange={this.onSelectHandler}
+                    disabled={this.props.isLoading}>
+                    <option value="0" disabled>
+                      Elige un modo de juego
+                    </option>
+                    <option value="10">Rápido (10 preguntas)</option>
+                    <option value="25">Normal (25 preguntas)</option>
+                    <option value="50">Extendido (50 preguntas)</option>
+                  </select>
+                </div>
               </div>
             </div>
-          {this.props.isLoading && <p className="has-text-centered">Cargando preguntas...</p>}
-          <button
-            type="button"
-            className={[
-              "button",
-              "is-info",
-              "is-fullwidth",
-              this.props.isLoading ? "is-loading" : ""
-            ].join(" ")}
-            disabled={!canSubmit || this.props.isLoading}
-            onClick={this.onSubmitHandler}>
-            Comenzar
-          </button>
+            {this.props.isLoading && (
+              <p className="has-text-centered">Cargando preguntas...</p>
+            )}
+            <button
+              type="button"
+              className={[
+                "button",
+                "is-info",
+                "is-fullwidth",
+                this.props.isLoading ? "is-loading" : ""
+              ].join(" ")}
+              disabled={!canSubmit || this.props.isLoading}
+              onClick={this.onSubmitHandler}>
+              Comenzar
+            </button>
           </div>
         </div>
       </div>
@@ -103,7 +109,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     startGame: options => {
-      dispatch(gameActions.startGame(options));
+      dispatch(startGame(options));
     }
   };
 };

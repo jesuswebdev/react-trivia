@@ -30,7 +30,7 @@ const errorLoadingCategories = (state, action) => {
 		...state,
 		loadingCategories: false,
 		errorLoadingCategories: true,
-		errorMessageLoadingCategories: action.error.message
+		errorMessageLoadingCategories: (action.error || {}).message || 'Ocurrió un error cargando las categorías'
 	};
 }
 

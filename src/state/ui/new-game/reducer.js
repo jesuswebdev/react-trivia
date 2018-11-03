@@ -28,7 +28,7 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 error: true,
-                errorMessage: action.payload.message
+                errorMessage: (action.error || {}).message || 'Ocurrió un error'
             }
         }
         default: return state;

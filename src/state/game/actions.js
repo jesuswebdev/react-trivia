@@ -17,7 +17,7 @@ export const startGame = (options) => dispatch => {
         dispatch(gameStartSuccess(data))
         dispatch(uiNewGameActions.uiNewGameFinishLoadingQuestions());
     })
-    .catch(({response: {data}}) => {
+    .catch(({response: {data} = {}}) => {
         dispatch(uiNewGameActions.uiNewGameFailLoadingQuestions(data));
     });
 }
@@ -121,7 +121,7 @@ export const getGameStats = () => dispatch => {
         dispatch(getGameStatsSuccess(data));
         dispatch(uiGameStatsActions.finishLoadingStats());
     })
-    .catch(({response: {data}}) => {
+    .catch(({response: {data} = {}}) => {
         dispatch(uiGameStatsActions.failLoadingStats(data));
     })
 }

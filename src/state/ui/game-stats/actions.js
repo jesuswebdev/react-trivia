@@ -12,9 +12,10 @@ export const finishLoadingStats = () => {
     }
 }
 
-export const failLoadingStats = () => {
+export const failLoadingStats = (error) => {
     return {
-        type: actionTypes.FAIL_LOADING_STATS
+        type: actionTypes.FAIL_LOADING_STATS,
+        error
     }
 }
 
