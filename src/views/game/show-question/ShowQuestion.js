@@ -1,38 +1,28 @@
 import React from "react";
 import Timer from "../../../components/timer/Timer";
+import QuestionOptions from '../question-options/QuestionOptions';
+import { Columns, Column, Box, Typography } from '../../../components/UI';
 
 const ShowQuestion = props => {
   return (
-    <div className="columns is-mobile is-tablet is-desktop is-centered">
-      <div className="column is-10-mobile is-10-tablet is-10-desktop">
-        <div>
-          <h1 className="subtitle is-2 has-text-centered">
+    <Columns mobile tablet desktop centered>
+      <Column mobile={10} tablet={10} desktop={10}>
+          <Typography type="subtitle" size={2} centered>
             Tiempo Restante: <Timer />
-          </h1>
-          <div className="box">
-            <h1 className="subtitle is-4 has-text-centered">
+          </Typography>
+          <Box>
+            <Typography type="subtitle" size={4} centered>
               {props.question.title}
-            </h1>
-          </div>
+            </Typography>
+          </Box>
 
-          <div className="columns is-multiline">
-            {props.question.options.map(q => {
-              return (
-                <div className="column is-6" key={q.option_id}>
-                  <button
-                    type="button"
-                    className="button is-fullwidth is-large is-rounded is-info"
-                    id={q.option_id}
-                    onClick={event => props.selectOptionHandler(event)}>
-                    {q.text}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
+          <QuestionOptions
+          options={props.question.options}
+          selectOptionHandler={props.selectOptionHandler}
+           />
+          
+      </Column>
+    </Columns>
   );
 };
 

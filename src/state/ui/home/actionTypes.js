@@ -1,3 +1,0 @@
-export const START_PING_SERVER = 'ui/ START PING SERVER';
-export const FINISH_PING_SERVER = 'ui/ FINISH PING SERVER';
-export const ERROR_PING_SERVER = 'ui/ ERROR PING SERVER';

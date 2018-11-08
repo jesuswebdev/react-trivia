@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { startGame } from "../../state/game/actions";
+import { Columns, Column, Typography } from '../../components/UI';
 
 class NewGame extends Component {
   state = {
@@ -28,10 +29,12 @@ class NewGame extends Component {
     let canSubmit =
       this.state.option !== "default" && this.state.question_count > 0;
     return (
-      <div className="columns is-mobile is-tablet is-desktop is-centered">
-        <div className="column is-10-mobile is-6-tablet is-6-desktop">
+      <Columns mobile tablet desktop centered>
+        <Column mobile={10} tablet={6} desktop={6}>
           <div className="box">
-            <h4 className="title is-size-4 has-text-centered">Juego Nuevo</h4>
+            <Typography type="title" size={4} centered>
+              Juego Nuevo
+            </Typography>
             {this.props.hasError && (
               <div className="notification is-danger has-text-centered">
                 {this.props.errorMessage}
@@ -91,8 +94,8 @@ class NewGame extends Component {
               Comenzar
             </button>
           </div>
-        </div>
-      </div>
+        </Column>
+      </Columns>
     );
   }
 }

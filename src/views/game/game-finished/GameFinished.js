@@ -1,40 +1,43 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
+import { Columns, Column, Box, Typography } from '../../../components/UI';
 import GameFinishedForm from "./game-finished-form/GameFinishedForm";
 
 const GameFinished = props => {
   return (
-    <div className="columns is-mobile is-tablet is-desktop is-centered">
-      <div className="column is-10-mobile is-6-tablet is-6-desktop">
-        <div className="box">
+    <Columns mobile tablet desktop centered>
+      <Column mobile={10} tablet={6} desktop={6}>
+        <Box>
           {props.correctAnswers === props.totalQuestions ? (
             <Fragment>
-              <h1 className="title is-2 has-text-centered">¡Enhorabuena!</h1>
-              <h1 className="subtitle is-4 has-text-centered">
+              <Typography type="title" size={2} centered>
+                ¡Enhorabuena!
+              </Typography>
+              <Typography type="subtitle" size={4} centered>
                 Lograste Completar el Reto
-              </h1>
-              <h1 className="subtitle is-5 has-text-centered">
+              </Typography>
+              <Typography type="subtitle" size={5} centered>
                 Respondiste a todas las preguntas correctamente
-              </h1>
+              </Typography>
             </Fragment>
           ) : (
             <Fragment>
               {props.timedOut ? (
-                <h1 className="title is-4 has-text-centered">
+                <Typography type="title" size={4} centered>
                   ¡Se te acabó el tiempo!
-                </h1>
+                </Typography>
               ) : (
-                <h1 className="title is-4 has-text-centered">Fin del Juego</h1>
+                <Typography type="title" size={4} centered>Fin del Juego</Typography>
               )}
               {props.correctAnswers === 0 ? (
-                <h1 className="subtitle is-5 has-text-centered">
+                <Typography type="subtitle" size={5} centered>
                   No respondiste ninguna pregunta correctamente
-                </h1>
+                </Typography>
               ) : (
-                <h1 className="subtitle is-5 has-text-centered">
+                <Typography type="subtitle" size={5} centered>
                   Respondiste correctamente {props.correctAnswers} preguntas de{" "}
                   {props.totalQuestions}
-                </h1>
+                </Typography>
               )}
             </Fragment>
           )}
@@ -67,9 +70,9 @@ const GameFinished = props => {
               </Link>
             </Fragment>
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Column>
+    </Columns>
   );
 };
 

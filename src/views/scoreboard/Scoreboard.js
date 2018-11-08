@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { Columns, Column, Typography, Box } from '../../components/UI';
 import { getGameStats } from "../../state/game/actions";
 import {
   selectMode,
@@ -23,12 +24,12 @@ class Scoreboard extends Component {
       errorMessage
     } = this.props;
     return (
-      <div className="columns is-mobile is-tablet is-desktop is-centered">
-        <div className="column is-10-mobile is-10-tablet is-10-desktop">
-          <div className="box">
-            <h1 className="subtitle is-5 has-text-centered">
+      <Columns mobile tablet desktop centered>
+        <Column mobile={10} tablet={10} desktop={10}>
+          <Box>
+            <Typography type="subtitle" size={5} centered>
               Tabla de Posiciones
-            </h1>
+            </Typography>
             <hr />
             { hasError && !loading && <div className="notification is-danger has-text-centered">{errorMessage}</div> }
             {loading && !hasError ? (
@@ -109,9 +110,9 @@ class Scoreboard extends Component {
                 Volver al menú principal
               </Link>
             </div>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Column>
+      </Columns>
     );
   }
 }

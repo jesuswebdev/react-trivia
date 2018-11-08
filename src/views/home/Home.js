@@ -1,17 +1,20 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
+import { Columns, Column, Typography } from '../../components/UI';
 import ServerStatusLabel from "../../components/server-status-label/ServerStatusLabel";
 
 class Home extends Component {
   render() {
     return (
       <Fragment>
-        <div className="columns is-mobile is-tablet is-desktop is-centered">
-          <div className="column is-10-mobile is-8-tablet is-6-desktop">
-            <h1 className="title is-1 has-text-centered">React Trivia</h1>
-            <h1 className="subtitle is-5 has-text-centered">
+        <Columns mobile tablet desktop centered>
+          <Column mobile={10} tablet={8} desktop={6}>
+            <Typography type="title" size={1} centered>
+              React Trivia
+            </Typography>
+            <Typography type="subtitle" size={5} centered>
               El Juego de Preguntas
-            </h1>
+            </Typography>
             <Link
               to="/nuevo"
               className="button is-info is-large is-fullwidth is-rounded">
@@ -28,8 +31,8 @@ class Home extends Component {
               className="button is-info is-large is-fullwidth is-rounded">
               Contribuir
             </Link>
-          </div>
-        </div>
+          </Column>
+        </Columns>
         <ServerStatusLabel />
       </Fragment>
     );

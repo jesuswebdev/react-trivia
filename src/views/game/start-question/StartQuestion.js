@@ -1,23 +1,26 @@
 import React from "react";
+import { Columns, Column, Box, Typography } from '../../../components/UI';
 
 const StartQuestion = props => {
   return (
-    <div className="columns is-mobile is-tablet is-desktop is-centered">
-      <div className="column is-10-mobile is-6-tablet is-6-desktop">
-        <div className="box">
-          <h3 className="title is-3 has-text-centered">
+    <Columns mobile tablet desktop centered>
+      <Column mobile={10} tablet={6} desktop={6} >
+        <Box>
+          <Typography type="title" size={3} centered>
             Pregunta {props.currentQuestion} de {props.questionCount}
-          </h3>
-          <h1 className="subtitle is-5 has-text-centered">Categoria: {props.category}</h1>
+          </Typography>
+          <Typography type="subtitle" size={5} centered>
+            Categoria: {props.category}
+          </Typography>
           <button
             type="button"
             className="button is-info is-large is-fullwidth"
             onClick={props.startQuestion}>
             Comenzar
           </button>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Column>
+    </Columns>
   );
 };
 

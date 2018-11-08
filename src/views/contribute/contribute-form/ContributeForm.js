@@ -1,6 +1,7 @@
 import React from "react";
 import { Formik, Form, Field, FieldArray } from "formik";
 import * as Yup from "yup";
+import { Columns, Column, Box, Typography } from '../../../components/UI';
 
 const QuestionSchema = Yup.object().shape({
   title: Yup.string()
@@ -60,12 +61,12 @@ const QuestionInitialValues = {
 
 const ContributeForm = props => {
   return (
-    <div className="columns is-centered">
-      <div className="column is-10">
-        <div className="box">
-          <h1 className="subtitle is-4 has-text-centered">
+    <Columns centered>
+      <Column size={10}>
+        <Box>
+          <Typography type="subtitle" size={4} centered>
             Proponer una pregunta nueva
-          </h1>
+          </Typography>
           <hr />
           {props.error && <div className="notification is-danger has-text-centered">{props.errorMessage}</div>}
           <Formik
@@ -372,9 +373,9 @@ const ContributeForm = props => {
               </Form>
             )}
           </Formik>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Column>
+    </Columns>
   );
 };
 
