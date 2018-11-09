@@ -1,14 +1,13 @@
 import React, { Component } from "react";
-import axios from 'axios';
+import axios from "axios";
 
-class ServerStatusLabel extends Component {
+export class ServerStatusLabel extends Component {
   state = {
     loading: false,
     success: false,
     error: false,
-    status: '',
     intervalId: null
-  }
+  };
   componentDidMount() {
     if (!this.state.success && !this.state.error) {
       this.pingServer();
@@ -26,34 +25,41 @@ class ServerStatusLabel extends Component {
   }
 
   pingServer() {
-    this.setState({ loading: true, success: false, error: false, status: "Conectando..." });
+    this.setState({
+      loading: true,
+      success: false,
+      error: false
+    });
     axios({
-      method: 'get',
+      method: "get",
       url: `${process.env.REACT_APP_API_URL}/health`,
       timeout: 10000
     })
-    .then(({data}) => {
-      this.setState({ loading: false, success: true, status: "OK" });
-    })
-    .catch((error) => {
-      this.setState({ loading: false, error: true, status: "ERROR" });
-    })
+      .then(({ data }) => {
+        this.setState({ loading: false, success: true });
+      })
+      .catch(error => {
+        this.setState({ loading: false, error: true });
+      });
   }
 
   render() {
-    const { loading, success, error, status } = this.state;
-    const stateTag = loading ? "is-info" : 
-      success ? "is-success" : 
-      error ? "is-danger" : "";
+    const { loading, success, error } = this.state;
+    const stateTag = loading
+      ? "is-info"
+      : success
+      ? "is-success"
+      : error
+      ? "is-danger"
+      : "";
 
     return (
       <div
         className="tags has-addons"
         style={{ paddingTop: "100px", justifyContent: "center" }}>
         <span className="tag is-dark">Servidor</span>
-        <span
-          className={`tag ${stateTag}`}>
-          {status}
+        <span className={`tag ${stateTag}`}>
+          {loading ? "Conectando..." : success ? "OK" : "ERROR"}
         </span>
       </div>
     );

@@ -1,23 +1,14 @@
-import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import { connect } from "react-redux";
-import Timer from './Timer';
-
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-import rootReducer from '../../state/reducers';
-
-const store = createStore(rootReducer, {timer:{seconds: 30}});
-
+import React from "react";
+import Enzyme, { shallow } from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
+import { Timer } from "./Timer";
 
 Enzyme.configure({ adapter: new Adapter() });
 
-describe('<Timer />', () => {
-	it('renders the component', () => {
-		const wrapper = shallow(<Timer />,  {context: {store}});
-		
-		expect(wrapper.contains(<div>{20}s</div>)).to.equal(true);
-		expect(wrapper.instance().props.seconds).to.equal(20)
-	})
-})
+describe("<Timer />", () => {
+  it("renders the component", () => {
+    const wrapper = shallow(<Timer seconds={20} />);
+
+    expect(wrapper.contains(<div>20s</div>)).toEqual(true);
+  });
+});

@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { startGame } from "../../state/game/actions";
-import { Columns, Column, Typography } from '../../components/UI';
+import { Columns, Column, Typography } from "../../components/UI";
 
-class NewGame extends Component {
+export class NewGame extends Component {
   state = {
     option: "default",
     question_count: 0
@@ -46,6 +46,7 @@ class NewGame extends Component {
                 <div className="select is-fullwidth">
                   <select
                     name="option"
+                    id="difficulty"
                     value={this.state.option}
                     onChange={this.onSelectHandler}
                     disabled={this.props.isLoading}>
@@ -64,6 +65,7 @@ class NewGame extends Component {
               <div className="control">
                 <div className="select is-fullwidth">
                   <select
+                    id="game-mode"
                     name="question_count"
                     value={this.state.question_count}
                     onChange={this.onSelectHandler}
@@ -82,6 +84,7 @@ class NewGame extends Component {
               <p className="has-text-centered">Cargando preguntas...</p>
             )}
             <button
+              id="start-button"
               type="button"
               className={[
                 "button",
