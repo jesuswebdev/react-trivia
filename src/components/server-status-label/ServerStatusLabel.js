@@ -45,20 +45,16 @@ export class ServerStatusLabel extends Component {
 
   render() {
     const { loading, success, error } = this.state;
-    const stateTag = loading
-      ? "is-info"
-      : success
-      ? "is-success"
-      : error
-      ? "is-danger"
-      : "";
 
     return (
       <div
         className="tags has-addons"
         style={{ paddingTop: "100px", justifyContent: "center" }}>
         <span className="tag is-dark">Servidor</span>
-        <span className={`tag ${stateTag}`}>
+        <span
+          className={`tag ${
+            loading ? "is-info" : success ? "is-success" : "is-danger"
+          }`}>
           {loading ? "Conectando..." : success ? "OK" : "ERROR"}
         </span>
       </div>
