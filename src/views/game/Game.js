@@ -6,8 +6,8 @@ import * as timerActions from "../../state/timer/actions";
 import StartQuestion from "./start-question/StartQuestion";
 import ShowQuestion from "./show-question/ShowQuestion";
 import NextQuestion from "./next-question/NextQuestion";
-import GameFinished from './game-finished/GameFinished';
-import { TIMER_TIME } from '../../config';
+import GameFinished from "./game-finished/GameFinished";
+import { TIMER_TIME } from "../../config";
 
 class Game extends Component {
   componentWillUnmount() {
@@ -17,7 +17,7 @@ class Game extends Component {
     this.props.resetTimer();
   }
 
-  prepareGame = (name) => {
+  prepareGame = name => {
     const questions = this.props.questions.map(q => {
       return {
         question: q._id,
@@ -35,7 +35,7 @@ class Game extends Component {
     };
   };
 
-  submitGame = (name) => {
+  submitGame = name => {
     this.props.saveGame(this.prepareGame(name));
   };
 
@@ -52,11 +52,10 @@ class Game extends Component {
     this.props.startQuestion();
   };
 
-  selectOptionHandler = async ({target: {id}}) => {
+  selectOptionHandler = async ({ target: { id } }) => {
     let options = this.props.questions[this.props.currentQuestion].options;
-    let correct = options.find(
-      o => o.option_id === parseInt(id, 10)
-    ).correct_answer;
+    let correct = options.find(o => o.option_id === parseInt(id, 10))
+      .correct_answer;
 
     let stats = {
       position: this.props.currentQuestion,
@@ -68,9 +67,9 @@ class Game extends Component {
       await this.props.selectWrongAnswer(stats);
     } else {
       await this.props.selectCorrectAnswer(stats);
-      if (this.props.currentQuestion + 1 === this.props.questions.length) {
-        this.props.setVictory();
-      }
+    }
+    if (this.props.currentQuestion + 1 === this.props.questions.length) {
+      this.props.setVictory();
     }
     clearTimeout(this.props.timeoutId);
     clearInterval(this.props.intervalId);
@@ -99,19 +98,30 @@ class Game extends Component {
       );
     }
     if (this.props.victory || this.props.timedOut) {
-      return <GameFinished
-      submitHandler={this.submitGame}
-      timedOut={this.props.timedOut}
-      loading={this.props.savingGame}
-      correctAnswers={this.props.totalCorrectAnswers}
-      totalQuestions={this.props.questions.length}
-      error={this.props.saveGameError}
-      errorMessage={this.props.saveGameErrorMessage}
-      gameSaved={this.props.gameSaved}/>;
+      return (
+        <GameFinished
+          submitHandler={this.submitGame}
+          timedOut={this.props.timedOut}
+          loading={this.props.savingGame}
+          correctAnswers={this.props.totalCorrectAnswers}
+          totalQuestions={this.props.questions.length}
+          error={this.props.saveGameError}
+          errorMessage={this.props.saveGameErrorMessage}
+          gameSaved={this.props.gameSaved}
+        />
+      );
     }
     if (this.props.questionStarted && this.props.wrongAnswer) {
-      const {text} = this.props.questions[this.props.currentQuestion].options.find(o => o.correct_answer);
-      return <NextQuestion wrong goToNextQuestion={this.onClickNextQuestion}>{`La respuesta correcta era: ${text}`}</NextQuestion>;
+      const { text } = this.props.questions[
+        this.props.currentQuestion
+      ].options.find(o => o.correct_answer);
+      return (
+        <NextQuestion
+          wrong
+          goToNextQuestion={
+            this.onClickNextQuestion
+          }>{`La respuesta correcta era: ${text}`}</NextQuestion>
+      );
     }
     if (this.props.questionStarted && this.props.correctAnswer) {
       return <NextQuestion goToNextQuestion={this.onClickNextQuestion} />;
