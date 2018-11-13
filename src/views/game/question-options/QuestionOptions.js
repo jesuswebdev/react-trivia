@@ -1,27 +1,28 @@
-import React from 'react';
-import { Columns, Column } from '../../../components/UI';
+import React from "react";
+import { Row, Col, Button } from "antd";
 
-const QuestionOptions = ({options, selectOptionHandler}) => {
-
-	const optionsButtons = options.map(q => {
+const QuestionOptions = ({ options, selectOptionHandler }) => {
+  const optionsButtons = options.map(q => {
     return (
-      <Column size={6} key={q.option_id}>
-        <button
-          type="button"
-          className="button is-fullwidth is-large is-rounded is-info"
+      <Col xs={24} sm={24} md={12} key={q.option_id}>
+        <Button
+          style={{ margin: "8px 0px" }}
           id={q.option_id}
-          onClick={event => selectOptionHandler(event)}>
+          onClick={selectOptionHandler}
+          size="large"
+          type="primary"
+          block>
           {q.text}
-        </button>
-      </Column>
+        </Button>
+      </Col>
     );
   });
 
-	return (
-		<Columns multiline>
+  return (
+    <Row type="flex" justify="center" gutter={16}>
       {optionsButtons}
-    </Columns>
-		);
-}
+    </Row>
+  );
+};
 
 export default QuestionOptions;

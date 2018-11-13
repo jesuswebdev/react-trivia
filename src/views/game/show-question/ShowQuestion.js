@@ -1,27 +1,21 @@
 import React from "react";
 import Timer from "../../../components/timer/Timer";
 import QuestionOptions from "../question-options/QuestionOptions";
-import { Columns, Column, Box, Typography } from "../../../components/UI";
+import QuestionTitle from "../question-title/QuestionTitle";
+import { Row, Col } from "antd";
 
 const ShowQuestion = props => {
   return (
-    <Columns mobile tablet desktop centered>
-      <Column mobile={10} tablet={10} desktop={10}>
-        <Typography type="subtitle" size={2} centered>
-          <Timer />
-        </Typography>
-        <Box>
-          <Typography type="subtitle" size={4} centered>
-            {props.question.title}
-          </Typography>
-        </Box>
-
+    <Row type="flex" justify="center">
+      <Col span={20}>
+        <Timer />
+        <QuestionTitle title={props.question.title} />
         <QuestionOptions
           options={props.question.options}
           selectOptionHandler={props.selectOptionHandler}
         />
-      </Column>
-    </Columns>
+      </Col>
+    </Row>
   );
 };
 

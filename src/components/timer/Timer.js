@@ -8,6 +8,7 @@ const secondsToPercentage = seconds => Math.floor((seconds / TIMER_TIME) * 100);
 export const Timer = ({ seconds }) => {
   return (
     <Progress
+      style={{ display: "block", textAlign: "center", marginBottom: "24px" }}
       type="circle"
       percent={secondsToPercentage(seconds)}
       status={seconds <= 10 ? "exception" : null}
