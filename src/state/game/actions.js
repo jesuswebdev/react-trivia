@@ -5,24 +5,6 @@ import * as uiGameActions from "../ui/game/actions";
 import axios from "axios";
 import { API_URL } from "../../config";
 
-export const startGame = options => dispatch => {
-  dispatch(uiNewGameActions.uiNewGameStartLoadingQuestions());
-
-  axios({
-    method: "get",
-    url: `${API_URL}/questions/newgame/${options.difficulty}?question_count=${
-      options.question_count
-    }`
-  })
-    .then(({ data }) => {
-      dispatch(gameStartSuccess(data));
-      dispatch(uiNewGameActions.uiNewGameFinishLoadingQuestions());
-    })
-    .catch(({ response: { data } = {} }) => {
-      dispatch(uiNewGameActions.uiNewGameFailLoadingQuestions(data));
-    });
-};
-
 export const saveGame = game => dispatch => {
   if (!game.name) {
     game = {

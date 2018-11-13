@@ -17,27 +17,33 @@ const AppHeader = props => {
   return (
     <Header>
       <Row>
-        <Col span={3}>
+        <Col xs={6} md={3}>
           <Link to="/" style={styles}>
             React Trivia
           </Link>
         </Col>
-        {playing || atHome || (
-          <Col span={21}>
+        {playing || atHome ? null : (
+          <Col xs={18} md={21}>
             <Menu
               theme="dark"
               mode="horizontal"
               style={{ lineHeight: "64px", float: "right" }}
               selectable={false}>
-              <MenuItem>
-                <Link to="/nuevo">Jugar</Link>
-              </MenuItem>
-              <MenuItem>
-                <Link to="/posiciones">Top 10</Link>
-              </MenuItem>
-              <MenuItem>
-                <Link to="/contribuir">Contribuir</Link>
-              </MenuItem>
+              {path !== "/nuevo" && (
+                <MenuItem>
+                  <Link to="/nuevo">Jugar</Link>
+                </MenuItem>
+              )}
+              {path !== "/posiciones" && (
+                <MenuItem>
+                  <Link to="/posiciones">Top 10</Link>
+                </MenuItem>
+              )}
+              {path !== "/contribuir" && (
+                <MenuItem>
+                  <Link to="/contribuir">Contribuir</Link>
+                </MenuItem>
+              )}
             </Menu>
           </Col>
         )}
