@@ -44,7 +44,7 @@ export class ServerStatusLabel extends Component {
   }
 
   render() {
-    const { loading, success, error } = this.state;
+    const { loading, success } = this.state;
 
     return (
       <div

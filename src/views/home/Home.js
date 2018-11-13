@@ -1,42 +1,43 @@
-import React, { Component, Fragment } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { Columns, Column, Typography } from '../../components/UI';
-import ServerStatusLabel from "../../components/server-status-label/ServerStatusLabel";
+import { Row, Col, Button } from "antd";
 
-class Home extends Component {
-  render() {
-    return (
-      <Fragment>
-        <Columns mobile tablet desktop centered>
-          <Column mobile={10} tablet={8} desktop={6}>
-            <Typography type="title" size={1} centered>
-              React Trivia
-            </Typography>
-            <Typography type="subtitle" size={5} centered>
-              El Juego de Preguntas
-            </Typography>
-            <Link
-              to="/nuevo"
-              className="button is-info is-large is-fullwidth is-rounded">
-              Jugar
-            </Link>
-            <Link
-              to="/posiciones"
-              style={{ margin: "12px 0px" }}
-              className="button is-info is-large is-fullwidth is-rounded">
-              Top 10
-            </Link>
-            <Link
-              to="/contribuir"
-              className="button is-info is-large is-fullwidth is-rounded">
-              Contribuir
-            </Link>
-          </Column>
-        </Columns>
-        <ServerStatusLabel />
-      </Fragment>
-    );
-  }
-}
+const Home = () => {
+  return (
+    <Row type="flex" justify="center">
+      <Col xs={22} sm={16} md={12} lg={12}>
+        <h1
+          style={{
+            fontSize: "3rem",
+            fontWeight: "bold",
+            textAlign: "center",
+            margin: "32px 0px 0px 0px"
+          }}>
+          React Trivia
+        </h1>
+        <h1
+          style={{
+            fontSize: "1.25rem",
+            textAlign: "center"
+          }}>
+          El Juego de Preguntas
+        </h1>
+        <Button type="primary" size="large" block>
+          <Link to="/nuevo">Jugar</Link>
+        </Button>
+        <Button
+          type="primary"
+          size="large"
+          block
+          style={{ margin: "12px 0px" }}>
+          <Link to="/posiciones">Top 10</Link>
+        </Button>
+        <Button type="primary" size="large" block>
+          <Link to="/contribuir">Contribuir</Link>
+        </Button>
+      </Col>
+    </Row>
+  );
+};
 
 export default Home;
