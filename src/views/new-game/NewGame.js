@@ -26,8 +26,8 @@ export class NewGame extends Component {
     this.setState({ loading: true, error: false }, async () => {
       try {
         const { data } = await http.get(url);
-        this.props.startGame(data);
         this.setState({ loading: false });
+        this.props.startGame(data);
       } catch (error) {
         this.setState({ loading: false, error: true });
       }
