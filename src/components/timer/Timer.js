@@ -3,17 +3,15 @@ import { connect } from "react-redux";
 import { TIMER_TIME } from "../../config";
 import { Progress } from "antd";
 
-const percentTo = seconds => Math.floor((seconds / TIMER_TIME) * 100);
-
-const percentFrom = percent => Math.ceil((TIMER_TIME * percent) / 100);
+const secondsToPercentage = seconds => Math.floor((seconds / TIMER_TIME) * 100);
 
 export const Timer = ({ seconds }) => {
   return (
     <Progress
       type="circle"
-      percent={percentTo(seconds)}
+      percent={secondsToPercentage(seconds)}
       status={seconds <= 10 ? "exception" : null}
-      format={percent => `${percentFrom(percent)}s`}
+      format={() => `${seconds}s`}
       width={150}
     />
   );

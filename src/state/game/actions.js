@@ -1,5 +1,4 @@
 import * as gameActionTypes from "./actionTypes";
-import * as uiNewGameActions from "../ui/new-game/actions";
 import * as uiGameStatsActions from "../ui/game-stats/actions";
 import * as uiGameActions from "../ui/game/actions";
 import axios from "axios";
