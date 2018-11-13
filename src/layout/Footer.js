@@ -1,11 +1,10 @@
 import React from "react";
+import { Layout } from "antd";
 
-const Footer = props => {
-  return (
-    <footer className="footer has-background-dark">
-      <div className="content has-text-centered has-text-light">React Trivia 2018</div>
-    </footer>
-  );
+const { Footer } = Layout;
+
+const AppFooter = props => {
+  return <Footer style={{ textAlign: "center" }}>React Trivia 2018</Footer>;
 };
 
-export default Footer;
+export default AppFooter;

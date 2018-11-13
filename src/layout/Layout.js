@@ -8,7 +8,7 @@ const AppLayout = ({ children }) => {
   return (
     <Layout>
       <Header />
-      <Content style={{ minHeight: window.innerHeight - 64, padding: "32px" }}>
+      <Content style={{ minHeight: window.innerHeight - 133, padding: "32px" }}>
         {children}
       </Content>
       <Footer />
