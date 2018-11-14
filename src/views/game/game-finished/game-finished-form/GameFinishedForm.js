@@ -1,5 +1,6 @@
 import React from "react";
-import { Formik, Form, Field } from "formik";
+import { Formik } from "formik";
+import { Form, Input, Button } from "antd";
 import * as Yup from "yup";
 
 const victorySchema = Yup.object().shape({
@@ -11,6 +12,8 @@ const victorySchema = Yup.object().shape({
     .notOneOf(["admin", "administrador"], "Ese nombre no es válido")
 });
 
+const FormItem = Form.Item;
+
 const VictoryForm = props => {
   return (
     <Formik
@@ -19,34 +22,37 @@ const VictoryForm = props => {
       onSubmit={({ name }) => {
         props.submitHandler(name);
       }}>
-      {({ errors, touched }) => (
-        <Form>
-          <div className="field">
-            <label className="label">Por favor, introduce tu nombre:</label>
-            <div className="control">
-              <Field
-                name="name"
-                type="text"
-                className="input"
-                placeholder="introduce tu nombre"
-                disabled={props.loading}
-              />
-            </div>
-            {errors.name && touched.name && (
-              <p className="help is-danger">{errors.name}</p>
-            )}
-          </div>
-          <button
-            type="submit"
-            className={[
-              "button",
-              "is-info",
-              "is-fullwidth",
-              props.loading ? "is-loading" : ""
-            ].join(" ")}
-            disabled={props.loading}>
+      {({
+        errors,
+        touched,
+        values,
+        handleSubmit,
+        handleChange,
+        handleBlur
+      }) => (
+        <Form onSubmit={handleSubmit}>
+          <FormItem
+            required
+            label="Introduce tu nombre"
+            hasFeedback
+            validateStatus={errors.name && touched.name ? "error" : ""}
+            help={(touched.name && errors.name) || ""}>
+            <Input
+              name="name"
+              value={values.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Introduce tu nombre"
+              disabled={props.loading}
+            />
+          </FormItem>
+          <Button
+            htmlType="submit"
+            type="primary"
+            loading={props.loading}
+            block>
             Enviar
-          </button>
+          </Button>
         </Form>
       )}
     </Formik>

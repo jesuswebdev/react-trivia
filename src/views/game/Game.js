@@ -5,11 +5,25 @@ import * as gameActions from "../../state/game/actions";
 import * as timerActions from "../../state/timer/actions";
 import StartQuestion from "./start-question/StartQuestion";
 import ShowQuestion from "./show-question/ShowQuestion";
-import NextQuestion from "./next-question/NextQuestion";
 import GameFinished from "./game-finished/GameFinished";
 import { TIMER_TIME } from "../../config";
 
 class Game extends Component {
+  state = {
+    answered: false,
+    correctAnswer: false,
+    selectedOption: null
+  };
+
+  setAnswered = answered => this.setState({ answered });
+  setSelectedOption = selectedOption => this.setState({ selectedOption });
+  setCorrectAnswer = correctAnswer => this.setState({ correctAnswer });
+
+  resetQuestion = () => {
+    this.setAnswered(false);
+    this.setSelectedOption(null);
+    this.setCorrectAnswer(false);
+  };
   componentWillUnmount() {
     this.props.destroyGame();
   }
@@ -57,6 +71,10 @@ class Game extends Component {
     let correct = options.find(o => o.option_id === parseInt(id, 10))
       .correct_answer;
 
+    this.setAnswered(true);
+    this.setCorrectAnswer(correct);
+    this.setSelectedOption(parseInt(id, 10));
+
     let stats = {
       position: this.props.currentQuestion,
       duration: TIMER_TIME - this.props.timerSeconds,
@@ -68,9 +86,7 @@ class Game extends Component {
     } else {
       await this.props.selectCorrectAnswer(stats);
     }
-    if (this.props.currentQuestion + 1 === this.props.questions.length) {
-      this.props.setVictory();
-    }
+
     clearTimeout(this.props.timeoutId);
     clearInterval(this.props.intervalId);
     this.props.resetTimer();
@@ -78,7 +94,14 @@ class Game extends Component {
 
   onClickNextQuestion = () => {
     this.props.resetTimer();
-    this.props.goToNextQuestion();
+    this.resetQuestion();
+    if (this.props.currentQuestion + 1 === this.props.questions.length) {
+      this.props.setVictory();
+      return;
+    }
+    if (this.props.currentQuestion < this.props.questions.length) {
+      this.props.goToNextQuestion();
+    }
   };
 
   render() {
@@ -111,21 +134,6 @@ class Game extends Component {
         />
       );
     }
-    if (this.props.questionStarted && this.props.wrongAnswer) {
-      const { text } = this.props.questions[
-        this.props.currentQuestion
-      ].options.find(o => o.correct_answer);
-      return (
-        <NextQuestion
-          wrong
-          goToNextQuestion={
-            this.onClickNextQuestion
-          }>{`La respuesta correcta era: ${text}`}</NextQuestion>
-      );
-    }
-    if (this.props.questionStarted && this.props.correctAnswer) {
-      return <NextQuestion goToNextQuestion={this.onClickNextQuestion} />;
-    }
 
     return (
       <ShowQuestion
@@ -133,6 +141,10 @@ class Game extends Component {
         questionCount={this.props.questions.length}
         question={this.props.questions[this.props.currentQuestion]}
         selectOptionHandler={this.selectOptionHandler}
+        answered={this.state.answered}
+        correct={this.state.correctAnswer}
+        selectedOption={this.state.selectedOption}
+        reset={this.onClickNextQuestion}
       />
     );
   }
@@ -147,8 +159,6 @@ const mapStateToProps = state => {
     timedOut: state.game.timedOut,
     intervalId: state.timer.intervalId,
     timeoutId: state.timer.timeoutId,
-    wrongAnswer: state.game.selectedWrongAnswer,
-    correctAnswer: state.game.selectedCorrectAnswer,
     victory: state.game.victory,
     timerSeconds: state.timer.seconds,
     gameSaved: state.game.saved,

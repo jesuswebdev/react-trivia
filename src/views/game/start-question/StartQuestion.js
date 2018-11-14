@@ -9,7 +9,7 @@ const StartQuestion = ({
 }) => {
   return (
     <Row type="flex" justify="center">
-      <Col xs={22} sm={16} md={12} lg={8}>
+      <Col xs={22} sm={16} md={12} lg={10}>
         <Card>
           <h1
             style={{

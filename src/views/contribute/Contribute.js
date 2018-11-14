@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { http } from "../../utils";
 import ContributeForm from "./contribute-form/ContributeForm";
 import SuccessScreen from "./success-screen/SuccessScreen";
 import { loadCategories } from "../../state/category/actions";
@@ -9,6 +10,10 @@ import {
 } from "../../state/question/actions";
 
 class Contribute extends Component {
+  state = {
+    categories: [],
+    loadingCategories: false
+  };
   componentDidMount() {
     this.props.loadCategories();
   }
@@ -29,9 +34,9 @@ class Contribute extends Component {
         loadingCategories={this.props.loadingCategories}
         categories={this.props.categories}
         submitHandler={this.submitQuestion}
-		loading={this.props.loading}
-		error={this.props.hasError}
-		errorMessage={this.props.errorMessage}
+        loading={this.props.loading}
+        error={this.props.hasError}
+        errorMessage={this.props.errorMessage}
       />
     );
   }

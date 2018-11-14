@@ -1,10 +1,10 @@
 import { Component } from "react";
-import { connect } from "react-redux";
 import { http } from "../../../utils";
 import { getGameStatsSuccess } from "../../../state/game/actions";
 
 class StatsProvider extends Component {
   state = {
+    stats: {},
     loading: false,
     error: false,
     mode: "fast",
@@ -15,8 +15,7 @@ class StatsProvider extends Component {
     this.setState({ loading: true, error: false }, async () => {
       try {
         const { data } = await http.get("/games/top");
-        this.props.getGameStats(data);
-        this.setState({ loading: false });
+        this.setState({ loading: false, stats: data });
       } catch (error) {
         this.setState({ loading: false, error: true });
       }
@@ -28,8 +27,7 @@ class StatsProvider extends Component {
   selectDifficulty = difficulty => this.setState({ difficulty });
 
   render() {
-    const { loading, error, mode, difficulty } = this.state;
-    const { stats } = this.props;
+    const { loading, error, mode, difficulty, stats } = this.state;
     const currentStats = ((stats || {})[difficulty] || {})[mode] || [];
     return this.props.children(
       loading,
@@ -41,21 +39,4 @@ class StatsProvider extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    getGameStats: stats => {
-      dispatch(getGameStatsSuccess(stats));
-    }
-  };
-};
-
-const mapStateToProps = state => {
-  return {
-    stats: state.game.stats
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(StatsProvider);
+export default StatsProvider;

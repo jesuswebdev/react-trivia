@@ -44,7 +44,7 @@ export class NewGame extends Component {
 
     return (
       <Row type="flex" justify="center">
-        <Col xs={22} sm={16} md={12} lg={8}>
+        <Col xs={22} sm={16} md={16} lg={10}>
           <Spin spinning={loading} tip="Cargando preguntas...">
             <Card>
               <h1 style={{ fontSize: "1.5rem", textAlign: "center" }}>
@@ -80,9 +80,9 @@ export class NewGame extends Component {
                   <Option value={0} disabled>
                     Elige un modo de juego
                   </Option>
-                  <Option value={10}>Rápido</Option>
-                  <Option value={25}>Normal</Option>
-                  <Option value={50}>Extendido</Option>
+                  <Option value={10}>Rápido (10 preguntas)</Option>
+                  <Option value={25}>Normal (25 preguntas)</Option>
+                  <Option value={50}>Extendido (50 preguntas)</Option>
                 </Select>
               </FormItem>
               <Button
