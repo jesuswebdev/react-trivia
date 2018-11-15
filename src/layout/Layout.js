@@ -1,18 +1,19 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Header from "./Header";
 import Footer from "./Footer";
+import { Layout } from "antd";
 
-const Layout = (props) => {
-    return (
-      <Fragment>
-        <Header />
-        <section className="section has-background-light" style={{minHeight: '75vh'}}>
-          <div className="container">{props.children}</div>
-        </section>
-        <Footer />
-      </Fragment>
-    );
-  
+const AppLayout = ({ children }) => {
+  const { Content } = Layout;
+  return (
+    <Layout>
+      <Header />
+      <Content style={{ minHeight: window.innerHeight - 133, padding: "32px" }}>
+        {children}
+      </Content>
+      <Footer />
+    </Layout>
+  );
 };
 
-export default Layout;
+export default AppLayout;

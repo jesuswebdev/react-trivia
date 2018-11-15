@@ -1,26 +1,37 @@
 import React from "react";
-import { Columns, Column, Box, Typography } from '../../../components/UI';
+import { Row, Col, Card, Button } from "antd";
 
-const StartQuestion = props => {
+const StartQuestion = ({
+  currentQuestion,
+  questionCount,
+  category,
+  startQuestion
+}) => {
   return (
-    <Columns mobile tablet desktop centered>
-      <Column mobile={10} tablet={6} desktop={6} >
-        <Box>
-          <Typography type="title" size={3} centered>
-            Pregunta {props.currentQuestion} de {props.questionCount}
-          </Typography>
-          <Typography type="subtitle" size={5} centered>
-            Categoria: {props.category}
-          </Typography>
-          <button
-            type="button"
-            className="button is-info is-large is-fullwidth"
-            onClick={props.startQuestion}>
-            Comenzar
-          </button>
-        </Box>
-      </Column>
-    </Columns>
+    <Row type="flex" justify="center">
+      <Col xs={22} sm={16} md={12} lg={10}>
+        <Card>
+          <h1
+            style={{
+              fontSize: "1.5rem",
+              textAlign: "center",
+              marginBottom: "0"
+            }}>
+            {`Pregunta ${currentQuestion} de ${questionCount}`}
+          </h1>
+          <h1
+            style={{
+              fontSize: "16px",
+              textAlign: "center",
+              marginBottom: "24px"
+            }}>{`Categoria: ${category}`}</h1>
+
+          <Button type="primary" onClick={startQuestion} block>
+            Continuar
+          </Button>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

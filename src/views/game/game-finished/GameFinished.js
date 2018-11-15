@@ -1,49 +1,65 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
-import { Columns, Column, Box, Typography } from '../../../components/UI';
+import { Row, Col, Card, Button, Alert } from "antd";
 import GameFinishedForm from "./game-finished-form/GameFinishedForm";
 
 const GameFinished = props => {
+  const title = {
+    fontSize: "1.5rem",
+    textAlign: "center",
+    marginBottom: "0"
+  };
+  const subtitle = {
+    fontSize: "16px",
+    textAlign: "center",
+    marginBottom: "24px"
+  };
   return (
-    <Columns mobile tablet desktop centered>
-      <Column mobile={10} tablet={6} desktop={6}>
-        <Box>
+    <Row type="flex" justify="center">
+      <Col xs={22} sm={16} md={16} lg={10}>
+        <Card>
           {props.correctAnswers === props.totalQuestions ? (
             <Fragment>
-              <Typography type="title" size={2} centered>
-                ¡Enhorabuena!
-              </Typography>
-              <Typography type="subtitle" size={4} centered>
+              <h1 style={title}>¡Enhorabuena!</h1>
+              <h1
+                style={{
+                  fontSize: "1.05rem",
+                  textAlign: "center"
+                }}>
                 Lograste Completar el Reto
-              </Typography>
-              <Typography type="subtitle" size={5} centered>
+              </h1>
+              <h1 style={subtitle}>
                 Respondiste a todas las preguntas correctamente
-              </Typography>
+              </h1>
             </Fragment>
           ) : (
             <Fragment>
               {props.timedOut ? (
-                <Typography type="title" size={4} centered>
-                  ¡Se te acabó el tiempo!
-                </Typography>
+                <h1 style={title}>¡Se te acabó el tiempo!</h1>
               ) : (
-                <Typography type="title" size={4} centered>Fin del Juego</Typography>
+                <h1 style={title}>Fin del Juego</h1>
               )}
               {props.correctAnswers === 0 ? (
-                <Typography type="subtitle" size={5} centered>
+                <h1 style={subtitle}>
                   No respondiste ninguna pregunta correctamente
-                </Typography>
+                </h1>
               ) : (
-                <Typography type="subtitle" size={5} centered>
-                  Respondiste correctamente {props.correctAnswers} preguntas de{" "}
-                  {props.totalQuestions}
-                </Typography>
+                <h1 style={subtitle}>
+                  {`Preguntas correctas: ${props.correctAnswers} / ${
+                    props.totalQuestions
+                  }`}
+                </h1>
               )}
             </Fragment>
           )}
 
           {props.error && (
-            <div class="notification is-danger">{props.errorMessage}</div>
+            <Alert
+              showIcon
+              type="error"
+              message="Error"
+              description="Ocurrió un error al intentar guardar el juego"
+            />
           )}
 
           {!props.gameSaved && (
@@ -54,25 +70,28 @@ const GameFinished = props => {
           )}
           {props.gameSaved && (
             <Fragment>
-              <div className="notification is-success has-text-centered">
-                El juego se guardó con éxito
-              </div>
-              <Link
-                to="/nuevo"
-                className="button is-info is-large is-fullwidth is-rounded"
-                style={{ marginBottom: "15px", marginTop: "50px" }}>
-                Jugar otra vez
-              </Link>
-              <Link
-                to="/"
-                className="button is-info is-large is-fullwidth is-rounded">
-                Ir al menú principal
-              </Link>
+              <Alert
+                showIcon
+                closable
+                type="success"
+                message="Guardado"
+                description="El juego se guardó con éxito"
+              />
+
+              <Button
+                type="primary"
+                block
+                style={{ marginBottom: "12px", marginTop: "24px" }}>
+                <Link to="/nuevo">Jugar otra vez</Link>
+              </Button>
+              <Button type="primary" block>
+                <Link to="/">Ir al menú principal</Link>
+              </Button>
             </Fragment>
           )}
-        </Box>
-      </Column>
-    </Columns>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

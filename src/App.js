@@ -16,7 +16,7 @@ class App extends Component {
             <Route path="/" exact component={Home} />
             <Route path="/nuevo" component={NewGame} />
             <Route path="/jugar" component={Game} />
-            <Route path="/posiciones" component={Scoreboard} />
+            <Route path="/top" component={Scoreboard} />
             <Route path="/contribuir" component={Contribute} />
             <Redirect to="/" />
           </Switch>

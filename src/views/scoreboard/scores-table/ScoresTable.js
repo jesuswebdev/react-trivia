@@ -1,55 +1,73 @@
 import React from "react";
+import { Row, Col, Card, Table, Select, Form, Alert } from "antd";
 
-const addZero = number => {
-  return number < 10 ? "0" + number : number;
-};
+import { transformDate } from "../../../utils";
 
-const transformDate = date => {
-  const newDate = new Date(date);
-  const fullDate = `${addZero(newDate.getHours())}:${addZero(
-    newDate.getMinutes()
-  )} del 
-  ${addZero(newDate.getDate())}-${addZero(
-    newDate.getMonth() + 1
-  )}-${newDate.getFullYear()}`;
-  return fullDate;
-};
-
-const ScoresTable = ({ children }) => {
-  if (children.length === 0) {
-    return (
-      <h1 className="subtitle is-5 has-text-centered">
-        Aquí no hay nada para mostrar
-      </h1>
-    );
+const columns = [
+  { title: "#", key: "position", render: (_, __, i) => i + 1 },
+  { title: "Jugador", dataIndex: "user" },
+  { title: "Respuesta Correctas", dataIndex: "total_correct_answers" },
+  {
+    title: "Duración del Juego",
+    dataIndex: "duration",
+    render: duration => `${duration} segundo${duration === 1 ? "" : "s"}`
+  },
+  {
+    title: "Fecha",
+    dataIndex: "createdAt",
+    render: date => transformDate(date)
   }
+];
+
+const FormItem = Form.Item;
+
+const ScoresTable = props => {
+  const Option = Select.Option;
   return (
-    <table className="table is-bordered is-striped is-fullwidth">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Jugador</th>
-          <th>
-            <abbr title="Respuestas Correctas">RC</abbr>
-          </th>
-          <th>Duración del Juego</th>
-          <th>Fecha</th>
-        </tr>
-      </thead>
-      <tbody>
-        {children.map((stat, index) => {
-          return (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{stat.user}</td>
-              <td>{stat.total_correct_answers}</td>
-              <td>{stat.duration} segundos</td>
-              <td>{transformDate(stat.createdAt)}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <Row type="flex" justify="center">
+      <Col span={22}>
+        <Card>
+          <h1 style={{ fontSize: "1.5rem", textAlign: "center" }}>
+            Tabla de Clasificación
+          </h1>
+          {props.error && (
+            <Alert
+              type="error"
+              message="Ocurrió un error al intentar cargar la tabla de clasificación"
+              banner
+            />
+          )}
+          <Form
+            layout="inline"
+            style={{ textAlign: "center", paddingBottom: "5px" }}>
+            <FormItem label="Dificultad">
+              <Select defaultValue="easy" onChange={props.selectDifficulty}>
+                <Option value="easy">Fácil</Option>
+                <Option value="medium">Media</Option>
+                <Option value="hard">Difícil</Option>
+              </Select>
+            </FormItem>
+
+            <FormItem label="Modo de Juego">
+              <Select defaultValue="fast" onChange={props.selectMode}>
+                <Option value="fast">Rápido</Option>
+                <Option value="normal">Normal</Option>
+                <Option value="extended">Extendido</Option>
+              </Select>
+            </FormItem>
+          </Form>
+
+          <Table
+            columns={columns}
+            dataSource={props.stats}
+            loading={props.loading}
+            rowKey={item => item._id}
+            pagination={{ hideOnSinglePage: true }}
+            locale={{ emptyText: "No hay nada para mostrar" }}
+          />
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

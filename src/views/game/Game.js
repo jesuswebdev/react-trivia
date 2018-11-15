@@ -5,11 +5,29 @@ import * as gameActions from "../../state/game/actions";
 import * as timerActions from "../../state/timer/actions";
 import StartQuestion from "./start-question/StartQuestion";
 import ShowQuestion from "./show-question/ShowQuestion";
-import NextQuestion from "./next-question/NextQuestion";
-import GameFinished from './game-finished/GameFinished';
-import { TIMER_TIME } from '../../config';
+import GameFinished from "./game-finished/GameFinished";
+import { TIMER_TIME } from "../../config";
+import { http } from "../../utils";
 
 class Game extends Component {
+  state = {
+    answered: false,
+    correctAnswer: false,
+    selectedOption: null,
+    saving: false,
+    saved: false,
+    error: false
+  };
+
+  setAnswered = answered => this.setState({ answered });
+  setSelectedOption = selectedOption => this.setState({ selectedOption });
+  setCorrectAnswer = correctAnswer => this.setState({ correctAnswer });
+
+  resetQuestion = () => {
+    this.setAnswered(false);
+    this.setSelectedOption(null);
+    this.setCorrectAnswer(false);
+  };
   componentWillUnmount() {
     this.props.destroyGame();
   }
@@ -17,7 +35,18 @@ class Game extends Component {
     this.props.resetTimer();
   }
 
-  prepareGame = (name) => {
+  saveGame = game => {
+    this.setState({ saving: true, saved: false, error: false }, async () => {
+      try {
+        await http.post("/games", game);
+        this.setState({ saving: false, saved: true });
+      } catch (error) {
+        this.setState({ saving: false, error: true });
+      }
+    });
+  };
+
+  prepareGame = name => {
     const questions = this.props.questions.map(q => {
       return {
         question: q._id,
@@ -35,8 +64,8 @@ class Game extends Component {
     };
   };
 
-  submitGame = (name) => {
-    this.props.saveGame(this.prepareGame(name));
+  submitGame = name => {
+    this.saveGame(this.prepareGame(name));
   };
 
   startQuestion = () => {
@@ -46,17 +75,19 @@ class Game extends Component {
     const timeout = setTimeout(() => {
       this.props.timerTimedOut();
       clearInterval(interval);
-      this.submitGame(null);
     }, TIMER_TIME * 1000);
     this.props.setTimerIds(interval, timeout);
     this.props.startQuestion();
   };
 
-  selectOptionHandler = async ({target: {id}}) => {
+  selectOptionHandler = async ({ target: { id } }) => {
     let options = this.props.questions[this.props.currentQuestion].options;
-    let correct = options.find(
-      o => o.option_id === parseInt(id, 10)
-    ).correct_answer;
+    let correct = options.find(o => o.option_id === parseInt(id, 10))
+      .correct_answer;
+
+    this.setAnswered(true);
+    this.setCorrectAnswer(correct);
+    this.setSelectedOption(parseInt(id, 10));
 
     let stats = {
       position: this.props.currentQuestion,
@@ -64,14 +95,7 @@ class Game extends Component {
       option: id
     };
 
-    if (!correct) {
-      await this.props.selectWrongAnswer(stats);
-    } else {
-      await this.props.selectCorrectAnswer(stats);
-      if (this.props.currentQuestion + 1 === this.props.questions.length) {
-        this.props.setVictory();
-      }
-    }
+    this.props.selectAnswer(stats, correct);
     clearTimeout(this.props.timeoutId);
     clearInterval(this.props.intervalId);
     this.props.resetTimer();
@@ -79,7 +103,14 @@ class Game extends Component {
 
   onClickNextQuestion = () => {
     this.props.resetTimer();
-    this.props.goToNextQuestion();
+    this.resetQuestion();
+    if (this.props.currentQuestion + 1 === this.props.questions.length) {
+      this.props.setVictory();
+      return;
+    }
+    if (this.props.currentQuestion < this.props.questions.length) {
+      this.props.goToNextQuestion();
+    }
   };
 
   render() {
@@ -99,22 +130,18 @@ class Game extends Component {
       );
     }
     if (this.props.victory || this.props.timedOut) {
-      return <GameFinished
-      submitHandler={this.submitGame}
-      timedOut={this.props.timedOut}
-      loading={this.props.savingGame}
-      correctAnswers={this.props.totalCorrectAnswers}
-      totalQuestions={this.props.questions.length}
-      error={this.props.saveGameError}
-      errorMessage={this.props.saveGameErrorMessage}
-      gameSaved={this.props.gameSaved}/>;
-    }
-    if (this.props.questionStarted && this.props.wrongAnswer) {
-      const {text} = this.props.questions[this.props.currentQuestion].options.find(o => o.correct_answer);
-      return <NextQuestion wrong goToNextQuestion={this.onClickNextQuestion}>{`La respuesta correcta era: ${text}`}</NextQuestion>;
-    }
-    if (this.props.questionStarted && this.props.correctAnswer) {
-      return <NextQuestion goToNextQuestion={this.onClickNextQuestion} />;
+      const { saving, saved, error } = this.state;
+      return (
+        <GameFinished
+          submitHandler={this.submitGame}
+          timedOut={this.props.timedOut}
+          loading={saving}
+          correctAnswers={this.props.totalCorrectAnswers}
+          totalQuestions={this.props.questions.length}
+          error={error}
+          gameSaved={saved}
+        />
+      );
     }
 
     return (
@@ -123,6 +150,10 @@ class Game extends Component {
         questionCount={this.props.questions.length}
         question={this.props.questions[this.props.currentQuestion]}
         selectOptionHandler={this.selectOptionHandler}
+        answered={this.state.answered}
+        correct={this.state.correctAnswer}
+        selectedOption={this.state.selectedOption}
+        reset={this.onClickNextQuestion}
       />
     );
   }
@@ -137,14 +168,8 @@ const mapStateToProps = state => {
     timedOut: state.game.timedOut,
     intervalId: state.timer.intervalId,
     timeoutId: state.timer.timeoutId,
-    wrongAnswer: state.game.selectedWrongAnswer,
-    correctAnswer: state.game.selectedCorrectAnswer,
     victory: state.game.victory,
     timerSeconds: state.timer.seconds,
-    gameSaved: state.game.saved,
-    savingGame: state.ui.game.loading,
-    saveGameError: state.ui.game.error,
-    saveGameErrorMessage: state.ui.game.errorMessage,
     totalCorrectAnswers: state.game.correct_answers
   };
 };
@@ -166,11 +191,8 @@ const mapDispatchToProps = dispatch => {
     timerTimedOut: () => {
       dispatch(gameActions.timerTimedOut());
     },
-    selectWrongAnswer: stats => {
-      dispatch(gameActions.selectWrongAnswer(stats));
-    },
-    selectCorrectAnswer: stats => {
-      dispatch(gameActions.selectCorrectAnswer(stats));
+    selectAnswer: (stats, correct) => {
+      dispatch(gameActions.selectAnswer(stats, correct));
     },
     setVictory: () => {
       dispatch(gameActions.setVictory());
@@ -180,9 +202,6 @@ const mapDispatchToProps = dispatch => {
     },
     resetTimer: () => {
       dispatch(timerActions.reset());
-    },
-    saveGame: game => {
-      dispatch(gameActions.saveGame(game));
     }
   };
 };

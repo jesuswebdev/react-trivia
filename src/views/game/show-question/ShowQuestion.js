@@ -1,28 +1,52 @@
 import React from "react";
 import Timer from "../../../components/timer/Timer";
-import QuestionOptions from '../question-options/QuestionOptions';
-import { Columns, Column, Box, Typography } from '../../../components/UI';
+import QuestionOptions from "../question-options/QuestionOptions";
+import QuestionTitle from "../question-title/QuestionTitle";
+import { Row, Col, Button, Alert, Icon } from "antd";
 
 const ShowQuestion = props => {
-  return (
-    <Columns mobile tablet desktop centered>
-      <Column mobile={10} tablet={10} desktop={10}>
-          <Typography type="subtitle" size={2} centered>
-            Tiempo Restante: <Timer />
-          </Typography>
-          <Box>
-            <Typography type="subtitle" size={4} centered>
-              {props.question.title}
-            </Typography>
-          </Box>
+  const correctAnswer = props.question.options.find(
+    option => option.correct_answer
+  ).text;
 
-          <QuestionOptions
+  const alert = (
+    <Alert
+      showIcon
+      message={`Respuesta ${props.correct ? "" : "in"}correcta`}
+      type={props.answered && props.correct ? "success" : "error"}
+      description={
+        props.answered && !props.correct
+          ? `La respuesta correcta era: ${correctAnswer}`
+          : ""
+      }
+    />
+  );
+  return (
+    <Row type="flex" justify="center">
+      <Col span={20}>
+        {props.answered ? (
+          <Row style={{ minHeight: "174px" }}>
+            <Col span={6} />
+            <Col span={12}>{alert} </Col>
+            <Col span={6} style={{ textAlign: "right" }}>
+              <Button type="primary" onClick={props.reset}>
+                Continuar <Icon type="right" />
+              </Button>
+            </Col>
+          </Row>
+        ) : (
+          <Timer />
+        )}
+        <QuestionTitle title={props.question.title} />
+        <QuestionOptions
           options={props.question.options}
           selectOptionHandler={props.selectOptionHandler}
-           />
-          
-      </Column>
-    </Columns>
+          answered={props.answered}
+          selectedOption={props.selectedOption}
+          questionId={props.question._id}
+        />
+      </Col>
+    </Row>
   );
 };
 

@@ -1,27 +1,49 @@
-import React from 'react';
-import { Columns, Column } from '../../../components/UI';
+import React, { Component } from "react";
+import { Row, Col, Button } from "antd";
 
-const QuestionOptions = ({options, selectOptionHandler}) => {
+class QuestionOptions extends Component {
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.questionId !== this.props.questionId) {
+      return true;
+    }
 
-	const optionsButtons = options.map(q => {
+    if (nextProps.answered !== this.props.answered) {
+      return true;
+    }
+
+    return false;
+  }
+
+  render() {
+    const {
+      options,
+      selectOptionHandler,
+      answered,
+      selectedOption
+    } = this.props;
+    const optionsButtons = options.map(q => {
+      return (
+        <Col xs={24} sm={24} md={12} key={q.option_id}>
+          <Button
+            style={{ margin: "8px 0px" }}
+            id={q.option_id}
+            onClick={answered ? () => {} : selectOptionHandler}
+            size="large"
+            type={answered ? "primary" : "default"}
+            disabled={answered && q.option_id !== selectedOption}
+            block>
+            {q.text}
+          </Button>
+        </Col>
+      );
+    });
+
     return (
-      <Column size={6} key={q.option_id}>
-        <button
-          type="button"
-          className="button is-fullwidth is-large is-rounded is-info"
-          id={q.option_id}
-          onClick={event => selectOptionHandler(event)}>
-          {q.text}
-        </button>
-      </Column>
+      <Row type="flex" justify="center" gutter={16}>
+        {optionsButtons}
+      </Row>
     );
-  });
-
-	return (
-		<Columns multiline>
-      {optionsButtons}
-    </Columns>
-		);
+  }
 }
 
 export default QuestionOptions;

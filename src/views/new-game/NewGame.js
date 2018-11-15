@@ -1,121 +1,115 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
-import { startGame } from "../../state/game/actions";
-import { Columns, Column, Typography } from "../../components/UI";
+import { http } from "../../utils";
+import { gameStartSuccess } from "../../state/game/actions";
+import { Row, Col, Card, Select, Form, Button, Spin, Alert } from "antd";
+
+const FormItem = Form.Item;
+const Option = Select.Option;
 
 export class NewGame extends Component {
   state = {
-    option: "default",
-    question_count: 0
+    difficulty: "default",
+    question_count: 0,
+    loading: false,
+    error: false
   };
 
-  onSelectHandler = ({ target: { name, value } }) => {
-    this.setState({ [`${name}`]: value });
-  };
+  selectDifficulty = difficulty => this.setState({ difficulty });
+
+  selectMode = question_count => this.setState({ question_count });
 
   onSubmitHandler = () => {
-    this.props.startGame({
-      difficulty: this.state.option,
-      question_count: this.state.question_count
+    const { difficulty, question_count } = this.state;
+    const url = `/questions/newgame/${difficulty}?question_count=${question_count}`;
+    this.setState({ loading: true, error: false }, async () => {
+      try {
+        const { data } = await http.get(url);
+        this.setState({ loading: false });
+        this.props.startGame(data);
+      } catch (error) {
+        this.setState({ loading: false, error: true });
+      }
     });
   };
 
   render() {
+    const { difficulty, question_count, loading, error } = this.state;
     if (this.props.gotTheQuestions) {
       return <Redirect to="/jugar" />;
     }
 
-    let canSubmit =
-      this.state.option !== "default" && this.state.question_count > 0;
+    let canSubmit = difficulty !== "default" && question_count > 0;
+
     return (
-      <Columns mobile tablet desktop centered>
-        <Column mobile={10} tablet={6} desktop={6}>
-          <div className="box">
-            <Typography type="title" size={4} centered>
-              Juego Nuevo
-            </Typography>
-            {this.props.hasError && (
-              <div className="notification is-danger has-text-centered">
-                {this.props.errorMessage}
-              </div>
-            )}
-            <div className="field">
-              <label className="label">Dificultad</label>
-              <div className="control">
-                <div className="select is-fullwidth">
-                  <select
-                    name="option"
-                    id="difficulty"
-                    value={this.state.option}
-                    onChange={this.onSelectHandler}
-                    disabled={this.props.isLoading}>
-                    <option value="default" disabled>
-                      Elige una dificultad
-                    </option>
-                    <option value="easy">Fácil</option>
-                    <option value="medium">Media</option>
-                    <option value="hard">Difícil</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div className="field">
-              <label className="label">Modo de Juego</label>
-              <div className="control">
-                <div className="select is-fullwidth">
-                  <select
-                    id="game-mode"
-                    name="question_count"
-                    value={this.state.question_count}
-                    onChange={this.onSelectHandler}
-                    disabled={this.props.isLoading}>
-                    <option value="0" disabled>
-                      Elige un modo de juego
-                    </option>
-                    <option value="10">Rápido (10 preguntas)</option>
-                    <option value="25">Normal (25 preguntas)</option>
-                    <option value="50">Extendido (50 preguntas)</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            {this.props.isLoading && (
-              <p className="has-text-centered">Cargando preguntas...</p>
-            )}
-            <button
-              id="start-button"
-              type="button"
-              className={[
-                "button",
-                "is-info",
-                "is-fullwidth",
-                this.props.isLoading ? "is-loading" : ""
-              ].join(" ")}
-              disabled={!canSubmit || this.props.isLoading}
-              onClick={this.onSubmitHandler}>
-              Comenzar
-            </button>
-          </div>
-        </Column>
-      </Columns>
+      <Row type="flex" justify="center">
+        <Col xs={22} sm={16} md={16} lg={10}>
+          <Spin spinning={loading} tip="Cargando preguntas...">
+            <Card>
+              <h1 style={{ fontSize: "1.5rem", textAlign: "center" }}>
+                Juego nuevo
+              </h1>
+              {error && (
+                <Alert
+                  type="error"
+                  showIcon
+                  closable
+                  message="Error"
+                  description="Ocurrió un error al intentar conectar con el servidor"
+                />
+              )}
+              <FormItem label="Dificultad">
+                <Select
+                  value={difficulty}
+                  onSelect={this.selectDifficulty}
+                  style={{ width: "100%" }}>
+                  <Option value="default" disabled>
+                    Elige una dificultad
+                  </Option>
+                  <Option value="easy">Fácil</Option>
+                  <Option value="medium">Media</Option>
+                  <Option value="hard">Difícil</Option>
+                </Select>
+              </FormItem>
+              <FormItem label="Modo de juego">
+                <Select
+                  value={question_count}
+                  onSelect={this.selectMode}
+                  style={{ width: "100%" }}>
+                  <Option value={0} disabled>
+                    Elige un modo de juego
+                  </Option>
+                  <Option value={10}>Rápido (10 preguntas)</Option>
+                  <Option value={25}>Normal (25 preguntas)</Option>
+                  <Option value={50}>Extendido (50 preguntas)</Option>
+                </Select>
+              </FormItem>
+              <Button
+                type="primary"
+                block
+                onClick={this.onSubmitHandler}
+                disabled={!canSubmit}>
+                Comenzar
+              </Button>
+            </Card>
+          </Spin>
+        </Col>
+      </Row>
     );
   }
 }
 
 const mapStateToProps = state => {
   return {
-    isLoading: state.ui.newGame.loading,
-    gotTheQuestions: state.game.questions.length > 0,
-    hasError: state.ui.newGame.error,
-    errorMessage: state.ui.newGame.errorMessage
+    gotTheQuestions: state.game.questions.length > 0
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     startGame: options => {
-      dispatch(startGame(options));
+      dispatch(gameStartSuccess(options));
     }
   };
 };
