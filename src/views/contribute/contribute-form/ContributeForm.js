@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik, FastField, Field } from "formik";
 import * as Yup from "yup";
-import { Row, Col, Form, Card, Input, Select, Button, Alert, Spin } from "antd";
+import { Row, Col, Form, Card, Input, Select, Button, Alert } from "antd";
 
 const QuestionSchema = Yup.object().shape({
   title: Yup.string()
@@ -82,249 +82,245 @@ const ContributeForm = props => {
           {props.error && (
             <Alert type="error" message={props.errorMessage} banner />
           )}
-          <Spin spinning={props.loadingCategories} tip="Cargando categorías...">
-            <Formik
-              initialValues={QuestionInitialValues}
-              validationSchema={QuestionSchema}
-              onSubmit={(values, { setSubmitting, resetForm }) => {
-                const form = prepareForm(values);
-                const reset = () => resetForm(QuestionInitialValues);
-                props.submitHandler(form, setSubmitting, reset);
-              }}>
-              {({
-                values,
-                errors,
-                touched,
-                resetForm,
-                isSubmitting,
-                handleSubmit,
-                setFieldValue
-              }) => (
-                <Form onSubmit={handleSubmit}>
-                  <FastField
-                    name="title"
-                    render={({ field, form }) => (
-                      <FormItem
-                        required
-                        label="Cuerpo de la pregunta"
-                        hasFeedback
-                        validateStatus={
-                          form.touched.title && form.errors.title ? "error" : ""
-                        }
-                        help={(form.touched.title && form.errors.title) || ""}>
-                        <TextArea
-                          {...field}
-                          placeholder="Cuerpo de la pregunta"
-                          disabled={isSubmitting}
-                        />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Row gutter={16}>
-                    {values.options.map((option, index) => {
-                      const inputError = (
-                        ((errors || {}).options || [])[index] || {}
-                      ).text;
-                      const inputTouched = ((touched || {}).options || [])[
-                        index
-                      ];
-                      return (
-                        <Col xs={24} md={12} key={index}>
-                          <FastField
-                            name={`options[${index}].text`}
-                            render={({ field, form }) => (
-                              <FormItem
-                                required
-                                label={`Opción ${index + 1}`}
-                                hasFeedback
-                                validateStatus={
-                                  inputTouched && inputError ? "error" : ""
-                                }
-                                help={(inputTouched && inputError) || ""}>
-                                <Input
-                                  {...field}
-                                  placeholder={`Opción ${index + 1}`}
-                                  disabled={isSubmitting}
-                                />
-                              </FormItem>
-                            )}
-                          />
-                        </Col>
-                      );
-                    })}
-                  </Row>
-
-                  <Row gutter={16}>
-                    <Col xs={24} md={8}>
-                      <FastField
-                        name="difficulty"
-                        render={({ field, form }) => (
-                          <FormItem
-                            required
-                            label="Dificultad"
-                            hasFeedback
-                            validateStatus={
-                              form.touched.difficulty && form.errors.difficulty
-                                ? "error"
-                                : ""
-                            }
-                            help={
-                              (form.touched.difficulty &&
-                                form.errors.difficulty) ||
-                              ""
-                            }>
-                            <Select
-                              {...field}
-                              disabled={isSubmitting}
-                              defaultValue="default"
-                              onSelect={option =>
-                                setFieldValue("difficulty", option)
-                              }>
-                              <Option value="default" disabled>
-                                Elige una dificultad
-                              </Option>
-                              <Option value="easy">Fácil</Option>
-                              <Option value="medium">Media</Option>
-                              <Option value="hard">Difícil</Option>
-                            </Select>
-                          </FormItem>
-                        )}
+          <Formik
+            initialValues={QuestionInitialValues}
+            validationSchema={QuestionSchema}
+            onSubmit={(values, { setSubmitting, resetForm }) => {
+              const form = prepareForm(values);
+              const reset = () => resetForm(QuestionInitialValues);
+              props.submitHandler(form, setSubmitting, reset);
+            }}>
+            {({
+              values,
+              errors,
+              touched,
+              resetForm,
+              isSubmitting,
+              handleSubmit,
+              setFieldValue
+            }) => (
+              <Form onSubmit={handleSubmit}>
+                <FastField
+                  name="title"
+                  render={({ field, form }) => (
+                    <FormItem
+                      required
+                      label="Cuerpo de la pregunta"
+                      hasFeedback
+                      validateStatus={
+                        form.touched.title && form.errors.title ? "error" : ""
+                      }
+                      help={(form.touched.title && form.errors.title) || ""}>
+                      <TextArea
+                        {...field}
+                        placeholder="Cuerpo de la pregunta"
+                        disabled={isSubmitting}
                       />
-                    </Col>
-                    <Col xs={24} md={8}>
-                      <Field
-                        name="category"
-                        render={({ field, form }) => (
-                          <FormItem
-                            required
-                            label="Categoría"
-                            hasFeedback
-                            validateStatus={
-                              form.touched.category && form.errors.category
-                                ? "error"
-                                : ""
-                            }
-                            help={
-                              (form.touched.category && form.errors.category) ||
-                              ""
-                            }>
-                            <Select
-                              {...field}
-                              disabled={isSubmitting || props.loadingCategories}
-                              defaultValue="default"
-                              onSelect={option =>
-                                setFieldValue("category", option)
-                              }>
-                              <Option value="default" disabled>
-                                Elige una categoría
-                              </Option>
-                              {categories}
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
-                    </Col>
-                    <Col xs={24} md={8}>
-                      <Field
-                        name="correct_answer"
-                        render={({ field, form }) => (
-                          <FormItem
-                            required
-                            label="Opción correcta"
-                            hasFeedback
-                            validateStatus={
-                              form.touched.correct_answer &&
-                              form.errors.correct_answer
-                                ? "error"
-                                : ""
-                            }
-                            help={
-                              (form.touched.correct_answer &&
-                                form.errors.correct_answer) ||
-                              ""
-                            }>
-                            <Select
-                              disabled={isSubmitting}
-                              defaultValue="default"
-                              {...field}
-                              onSelect={option =>
-                                setFieldValue("correct_answer", option)
-                              }>
-                              <Option value="default" disabled>
-                                Elige una opción
-                              </Option>
-                              <Option value="0">Opción 1</Option>
-                              <Option value="1">Opción 2</Option>
-                              <Option value="2">Opción 3</Option>
-                              <Option value="3">Opción 4</Option>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
-                    </Col>
-                  </Row>
+                    </FormItem>
+                  )}
+                />
 
-                  <FastField
-                    name="link"
-                    render={({ field, form }) => (
-                      <FormItem
-                        label="Enlace"
-                        hasFeedback
-                        validateStatus={
-                          form.touched.link && form.errors.link ? "error" : ""
-                        }
-                        help={(form.touched.link && form.errors.link) || ""}>
-                        <Input
-                          {...field}
-                          disabled={isSubmitting}
-                          placeholder="https://es.wikipedia.org/wiki/trivia"
+                <Row gutter={16}>
+                  {values.options.map((option, index) => {
+                    const inputError = (
+                      ((errors || {}).options || [])[index] || {}
+                    ).text;
+                    const inputTouched = ((touched || {}).options || [])[index];
+                    return (
+                      <Col xs={24} md={12} key={index}>
+                        <FastField
+                          name={`options[${index}].text`}
+                          render={({ field, form }) => (
+                            <FormItem
+                              required
+                              label={`Opción ${index + 1}`}
+                              hasFeedback
+                              validateStatus={
+                                inputTouched && inputError ? "error" : ""
+                              }
+                              help={(inputTouched && inputError) || ""}>
+                              <Input
+                                {...field}
+                                placeholder={`Opción ${index + 1}`}
+                                disabled={isSubmitting}
+                              />
+                            </FormItem>
+                          )}
                         />
-                      </FormItem>
-                    )}
-                  />
+                      </Col>
+                    );
+                  })}
+                </Row>
 
-                  <FastField
-                    name="did_you_know"
-                    render={({ field, form }) => (
-                      <FormItem
-                        label="Dato curioso"
-                        hasFeedback
-                        validateStatus={
-                          form.touched.did_you_know && form.errors.did_you_know
-                            ? "error"
-                            : ""
-                        }
-                        help={
-                          (form.touched.did_you_know &&
-                            form.errors.did_you_know) ||
-                          ""
-                        }>
-                        <TextArea
-                          {...field}
-                          placeholder={`Ejemplo: Los antiguos Romanos usaban la palabra triviae para describir un camino que se dividía en dos. Triviae se formó de tri (tres) y viae (vías), que literalmente signifíca "tres caminos"`}
-                          disabled={isSubmitting}
-                        />
-                      </FormItem>
-                    )}
-                  />
+                <Row gutter={16}>
+                  <Col xs={24} md={8}>
+                    <FastField
+                      name="difficulty"
+                      render={({ field, form }) => (
+                        <FormItem
+                          required
+                          label="Dificultad"
+                          hasFeedback
+                          validateStatus={
+                            form.touched.difficulty && form.errors.difficulty
+                              ? "error"
+                              : ""
+                          }
+                          help={
+                            (form.touched.difficulty &&
+                              form.errors.difficulty) ||
+                            ""
+                          }>
+                          <Select
+                            {...field}
+                            disabled={isSubmitting}
+                            defaultValue="default"
+                            onSelect={option =>
+                              setFieldValue("difficulty", option)
+                            }>
+                            <Option value="default" disabled>
+                              Elige una dificultad
+                            </Option>
+                            <Option value="easy">Fácil</Option>
+                            <Option value="medium">Media</Option>
+                            <Option value="hard">Difícil</Option>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Field
+                      name="category"
+                      render={({ field, form }) => (
+                        <FormItem
+                          required
+                          label="Categoría"
+                          hasFeedback
+                          validateStatus={
+                            form.touched.category && form.errors.category
+                              ? "error"
+                              : ""
+                          }
+                          help={
+                            (form.touched.category && form.errors.category) ||
+                            ""
+                          }>
+                          <Select
+                            {...field}
+                            disabled={isSubmitting || props.loadingCategories}
+                            defaultValue="default"
+                            onSelect={option =>
+                              setFieldValue("category", option)
+                            }>
+                            <Option value="default" disabled>
+                              Elige una categoría
+                            </Option>
+                            {categories}
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                  </Col>
+                  <Col xs={24} md={8}>
+                    <Field
+                      name="correct_answer"
+                      render={({ field, form }) => (
+                        <FormItem
+                          required
+                          label="Opción correcta"
+                          hasFeedback
+                          validateStatus={
+                            form.touched.correct_answer &&
+                            form.errors.correct_answer
+                              ? "error"
+                              : ""
+                          }
+                          help={
+                            (form.touched.correct_answer &&
+                              form.errors.correct_answer) ||
+                            ""
+                          }>
+                          <Select
+                            disabled={isSubmitting}
+                            defaultValue="default"
+                            {...field}
+                            onSelect={option =>
+                              setFieldValue("correct_answer", option)
+                            }>
+                            <Option value="default" disabled>
+                              Elige una opción
+                            </Option>
+                            <Option value="0">Opción 1</Option>
+                            <Option value="1">Opción 2</Option>
+                            <Option value="2">Opción 3</Option>
+                            <Option value="3">Opción 4</Option>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                  </Col>
+                </Row>
 
-                  <Button
-                    htmlType="submit"
-                    type="primary"
-                    loading={isSubmitting}
-                    style={{ marginRight: "8px" }}>
-                    Enviar
-                  </Button>
-                  <Button
-                    disabled={isSubmitting}
-                    onClick={() => resetForm(QuestionInitialValues)}>
-                    Limpiar formulario
-                  </Button>
-                </Form>
-              )}
-            </Formik>
-          </Spin>
+                <FastField
+                  name="link"
+                  render={({ field, form }) => (
+                    <FormItem
+                      label="Enlace"
+                      hasFeedback
+                      validateStatus={
+                        form.touched.link && form.errors.link ? "error" : ""
+                      }
+                      help={(form.touched.link && form.errors.link) || ""}>
+                      <Input
+                        {...field}
+                        disabled={isSubmitting}
+                        placeholder="https://es.wikipedia.org/wiki/trivia"
+                      />
+                    </FormItem>
+                  )}
+                />
+
+                <FastField
+                  name="did_you_know"
+                  render={({ field, form }) => (
+                    <FormItem
+                      label="Dato curioso"
+                      hasFeedback
+                      validateStatus={
+                        form.touched.did_you_know && form.errors.did_you_know
+                          ? "error"
+                          : ""
+                      }
+                      help={
+                        (form.touched.did_you_know &&
+                          form.errors.did_you_know) ||
+                        ""
+                      }>
+                      <TextArea
+                        {...field}
+                        placeholder={`Ejemplo: Los antiguos Romanos usaban la palabra triviae para describir un camino que se dividía en dos. Triviae se formó de tri (tres) y viae (vías), que literalmente signifíca "tres caminos"`}
+                        disabled={isSubmitting}
+                      />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  htmlType="submit"
+                  type="primary"
+                  loading={isSubmitting}
+                  style={{ marginRight: "8px" }}>
+                  Enviar
+                </Button>
+                <Button
+                  disabled={isSubmitting}
+                  onClick={() => resetForm(QuestionInitialValues)}>
+                  Limpiar formulario
+                </Button>
+              </Form>
+            )}
+          </Formik>
         </Card>
       </Col>
     </Row>
