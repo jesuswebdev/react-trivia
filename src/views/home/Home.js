@@ -30,7 +30,7 @@ const Home = () => {
           size="large"
           block
           style={{ margin: "12px 0px" }}>
-          <Link to="/posiciones">Top 10</Link>
+          <Link to="/top">Top 10</Link>
         </Button>
         <Button type="primary" size="large" block>
           <Link to="/contribuir">Contribuir</Link>

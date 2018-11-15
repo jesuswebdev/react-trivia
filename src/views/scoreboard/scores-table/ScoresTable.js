@@ -1,9 +1,10 @@
 import React from "react";
-import { Row, Col, Card, Table, Select, Form } from "antd";
+import { Row, Col, Card, Table, Select, Form, Alert } from "antd";
 
 import { transformDate } from "../../../utils";
 
 const columns = [
+  { title: "#", key: "position", render: (_, __, i) => i + 1 },
   { title: "Jugador", dataIndex: "user" },
   { title: "Respuesta Correctas", dataIndex: "total_correct_answers" },
   {
@@ -27,9 +28,15 @@ const ScoresTable = props => {
       <Col span={22}>
         <Card>
           <h1 style={{ fontSize: "1.5rem", textAlign: "center" }}>
-            Tabla de Posiciones
+            Tabla de Clasificación
           </h1>
-
+          {props.error && (
+            <Alert
+              type="error"
+              message="Ocurrió un error al intentar cargar la tabla de clasificación"
+              banner
+            />
+          )}
           <Form
             layout="inline"
             style={{ textAlign: "center", paddingBottom: "5px" }}>

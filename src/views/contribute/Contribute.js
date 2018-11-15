@@ -1,73 +1,68 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import { http } from "../../utils";
 import ContributeForm from "./contribute-form/ContributeForm";
-import SuccessScreen from "./success-screen/SuccessScreen";
-import { loadCategories } from "../../state/category/actions";
-import {
-  submitQuestion,
-  resetSubmitQuestionState
-} from "../../state/question/actions";
+import { message } from "antd";
 
 class Contribute extends Component {
   state = {
     categories: [],
-    loadingCategories: false
+    loadingCategories: false,
+    error: false,
+    errorMessage: ""
   };
+
   componentDidMount() {
-    this.props.loadCategories();
+    this.setState(
+      { loadingCategories: true, error: false, errorMessage: "" },
+      async () => {
+        try {
+          const {
+            data: { categories }
+          } = await http.get("/category");
+          this.setState({ categories, loadingCategories: false });
+        } catch (error) {
+          this.setState({
+            loadingCategories: false,
+            error: true,
+            errorMessage: "Ocurrió un error al intentar cargar las categorías"
+          });
+        }
+      }
+    );
   }
 
-  componentWillUnmount() {
-    this.props.resetQuestionSent();
-  }
+  questionSent = () => message.success("Tu pregunta se envió con éxito");
 
-  submitQuestion = question => {
-    this.props.submitQuestion(question);
+  submitQuestion = (question, setSubmitting, reset) => {
+    setSubmitting(true);
+    this.setState({ error: false, errorMessage: "" }, async () => {
+      try {
+        await http.post("/questions", question);
+        setSubmitting(false);
+        this.questionSent();
+        reset();
+      } catch ({ response: { data } }) {
+        this.setState({
+          error: true,
+          errorMessage: "Ocurrió un error al intentar enviar tu pregunta"
+        });
+        setSubmitting(false);
+      }
+    });
   };
 
   render() {
-    return this.props.sent ? (
-      <SuccessScreen reset={this.props.resetQuestionSent} />
-    ) : (
+    const { loadingCategories, categories, error, errorMessage } = this.state;
+    return (
       <ContributeForm
-        loadingCategories={this.props.loadingCategories}
-        categories={this.props.categories}
+        loadingCategories={loadingCategories}
+        categories={categories}
         submitHandler={this.submitQuestion}
-        loading={this.props.loading}
-        error={this.props.hasError}
-        errorMessage={this.props.errorMessage}
+        error={error}
+        errorMessage={errorMessage}
       />
     );
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    categories: state.category.categories,
-    loadingCategories: state.ui.contribute.loadingCategories,
-    hasError: state.ui.contribute.errorLoadingCategories,
-    errorMessage: state.ui.contribute.errorMessageLoadingCategories,
-    loading: state.ui.contribute.loading,
-    sent: state.question.sent
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    loadCategories: () => {
-      dispatch(loadCategories());
-    },
-    submitQuestion: question => {
-      dispatch(submitQuestion(question));
-    },
-    resetQuestionSent: () => {
-      dispatch(resetSubmitQuestionState());
-    }
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Contribute);
+export default Contribute;

@@ -1,38 +1,4 @@
 import * as gameActionTypes from "./actionTypes";
-import * as uiGameStatsActions from "../ui/game-stats/actions";
-import * as uiGameActions from "../ui/game/actions";
-import axios from "axios";
-import { API_URL } from "../../config";
-
-export const saveGame = game => dispatch => {
-  if (!game.name) {
-    game = {
-      token: game.token,
-      questions: game.questions
-    };
-  }
-  dispatch(uiGameActions.uiStartSavingGame());
-  axios({
-    method: "post",
-    url: `${API_URL}/games`,
-    data: game
-  })
-    .then(response => {
-      if (game.name) {
-        dispatch(gameSaved());
-      }
-      dispatch(uiGameActions.uiFinishSavingGame());
-    })
-    .catch(({ response: { data } }) => {
-      dispatch(uiGameActions.uiErrorSavingGame(data));
-    });
-};
-
-export const gameSaved = () => {
-  return {
-    type: gameActionTypes.GAME_SAVED
-  };
-};
 
 export const gameStartSuccess = gameOptions => {
   return {
@@ -59,17 +25,10 @@ export const timerTimedOut = () => {
   };
 };
 
-export const selectWrongAnswer = stats => {
+export const selectAnswer = (stats, correct) => {
   return {
-    type: gameActionTypes.SELECT_WRONG_ANSWER,
-    payload: stats
-  };
-};
-
-export const selectCorrectAnswer = stats => {
-  return {
-    type: gameActionTypes.SELECT_CORRECT_ANSWER,
-    payload: stats
+    type: gameActionTypes.SELECT_ANSWER,
+    payload: { stats, correct }
   };
 };
 
@@ -83,27 +42,4 @@ export const nextQuestion = () => {
   return {
     type: gameActionTypes.NEXT_QUESTION
   };
-};
-
-export const getGameStatsSuccess = stats => {
-  return {
-    type: gameActionTypes.GET_GAME_STATS_SUCCESS,
-    payload: stats
-  };
-};
-
-export const getGameStats = () => dispatch => {
-  dispatch(uiGameStatsActions.startLoadingStats());
-
-  axios({
-    method: "get",
-    url: `${API_URL}/games/top`
-  })
-    .then(({ data }) => {
-      dispatch(getGameStatsSuccess(data));
-      dispatch(uiGameStatsActions.finishLoadingStats());
-    })
-    .catch(({ response: { data } = {} }) => {
-      dispatch(uiGameStatsActions.failLoadingStats(data));
-    });
 };

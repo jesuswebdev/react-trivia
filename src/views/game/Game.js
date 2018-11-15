@@ -7,12 +7,16 @@ import StartQuestion from "./start-question/StartQuestion";
 import ShowQuestion from "./show-question/ShowQuestion";
 import GameFinished from "./game-finished/GameFinished";
 import { TIMER_TIME } from "../../config";
+import { http } from "../../utils";
 
 class Game extends Component {
   state = {
     answered: false,
     correctAnswer: false,
-    selectedOption: null
+    selectedOption: null,
+    saving: false,
+    saved: false,
+    error: false
   };
 
   setAnswered = answered => this.setState({ answered });
@@ -30,6 +34,17 @@ class Game extends Component {
   componentDidMount() {
     this.props.resetTimer();
   }
+
+  saveGame = game => {
+    this.setState({ saving: true, saved: false, error: false }, async () => {
+      try {
+        await http.post("/games", game);
+        this.setState({ saving: false, saved: true });
+      } catch (error) {
+        this.setState({ saving: false, error: true });
+      }
+    });
+  };
 
   prepareGame = name => {
     const questions = this.props.questions.map(q => {
@@ -50,7 +65,7 @@ class Game extends Component {
   };
 
   submitGame = name => {
-    this.props.saveGame(this.prepareGame(name));
+    this.saveGame(this.prepareGame(name));
   };
 
   startQuestion = () => {
@@ -60,7 +75,6 @@ class Game extends Component {
     const timeout = setTimeout(() => {
       this.props.timerTimedOut();
       clearInterval(interval);
-      this.submitGame(null);
     }, TIMER_TIME * 1000);
     this.props.setTimerIds(interval, timeout);
     this.props.startQuestion();
@@ -81,12 +95,7 @@ class Game extends Component {
       option: id
     };
 
-    if (!correct) {
-      await this.props.selectWrongAnswer(stats);
-    } else {
-      await this.props.selectCorrectAnswer(stats);
-    }
-
+    this.props.selectAnswer(stats, correct);
     clearTimeout(this.props.timeoutId);
     clearInterval(this.props.intervalId);
     this.props.resetTimer();
@@ -121,16 +130,16 @@ class Game extends Component {
       );
     }
     if (this.props.victory || this.props.timedOut) {
+      const { saving, saved, error } = this.state;
       return (
         <GameFinished
           submitHandler={this.submitGame}
           timedOut={this.props.timedOut}
-          loading={this.props.savingGame}
+          loading={saving}
           correctAnswers={this.props.totalCorrectAnswers}
           totalQuestions={this.props.questions.length}
-          error={this.props.saveGameError}
-          errorMessage={this.props.saveGameErrorMessage}
-          gameSaved={this.props.gameSaved}
+          error={error}
+          gameSaved={saved}
         />
       );
     }
@@ -161,10 +170,6 @@ const mapStateToProps = state => {
     timeoutId: state.timer.timeoutId,
     victory: state.game.victory,
     timerSeconds: state.timer.seconds,
-    gameSaved: state.game.saved,
-    savingGame: state.ui.game.loading,
-    saveGameError: state.ui.game.error,
-    saveGameErrorMessage: state.ui.game.errorMessage,
     totalCorrectAnswers: state.game.correct_answers
   };
 };
@@ -186,11 +191,8 @@ const mapDispatchToProps = dispatch => {
     timerTimedOut: () => {
       dispatch(gameActions.timerTimedOut());
     },
-    selectWrongAnswer: stats => {
-      dispatch(gameActions.selectWrongAnswer(stats));
-    },
-    selectCorrectAnswer: stats => {
-      dispatch(gameActions.selectCorrectAnswer(stats));
+    selectAnswer: (stats, correct) => {
+      dispatch(gameActions.selectAnswer(stats, correct));
     },
     setVictory: () => {
       dispatch(gameActions.setVictory());
@@ -200,9 +202,6 @@ const mapDispatchToProps = dispatch => {
     },
     resetTimer: () => {
       dispatch(timerActions.reset());
-    },
-    saveGame: game => {
-      dispatch(gameActions.saveGame(game));
     }
   };
 };

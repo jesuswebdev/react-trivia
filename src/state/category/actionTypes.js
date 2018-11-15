@@ -1,1 +1,0 @@
-export const LOAD_CATEGORIES_SUCCESS = 'category/ LOAD CATEGORIES SUCCESS';

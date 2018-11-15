@@ -1,6 +1,5 @@
 import { Component } from "react";
 import { http } from "../../../utils";
-import { getGameStatsSuccess } from "../../../state/game/actions";
 
 class StatsProvider extends Component {
   state = {

@@ -1,7 +1,7 @@
 import React from "react";
-import { Formik, Form, Field, FieldArray } from "formik";
+import { Formik, FastField, Field } from "formik";
 import * as Yup from "yup";
-import { Columns, Column, Box, Typography } from '../../../components/UI';
+import { Row, Col, Form, Card, Input, Select, Button, Alert, Spin } from "antd";
 
 const QuestionSchema = Yup.object().shape({
   title: Yup.string()
@@ -59,323 +59,275 @@ const QuestionInitialValues = {
   correct_answer: "default"
 };
 
+const FormItem = Form.Item;
+const Option = Select.Option;
+const { TextArea } = Input;
+
 const ContributeForm = props => {
+  const categories = props.categories.map((category, index) => {
+    return (
+      <Option key={index} value={category._id}>
+        {category.title}
+      </Option>
+    );
+  });
+
   return (
-    <Columns centered>
-      <Column size={10}>
-        <Box>
-          <Typography type="subtitle" size={4} centered>
+    <Row type="flex" justify="center">
+      <Col span={22}>
+        <Card>
+          <h1 style={{ fontSize: "1.5rem", textAlign: "center" }}>
             Proponer una pregunta nueva
-          </Typography>
-          <hr />
-          {props.error && <div className="notification is-danger has-text-centered">{props.errorMessage}</div>}
-          <Formik
-            initialValues={QuestionInitialValues}
-            validationSchema={QuestionSchema}
-            onSubmit={values => {
-              let form = prepareForm(values);
-              props.submitHandler(form);
-            }}>
-            {({ values, errors, touched, resetForm }) => (
-              <Form>
-                <div className="field">
-                  <label className="label">Cuerpo de la pregunta:</label>
-                  <div className="control">
-                    <Field
-                      name="title"
-                      component="textarea"
-                      className={[
-                        "textarea",
-                        errors.title && touched.title && "is-danger",
-                        !errors.title && touched.title && "is-success"
-                      ].join(" ")}
-                      placeholder="Cuerpo de la pregunta..."
-                      disabled={props.loading}
-                    />
-                  </div>
-                  {errors.title &&
-                    touched.title && (
-                      <p className="help is-danger">{errors.title}</p>
+          </h1>
+          {props.error && (
+            <Alert type="error" message={props.errorMessage} banner />
+          )}
+          <Spin spinning={props.loadingCategories} tip="Cargando categorías...">
+            <Formik
+              initialValues={QuestionInitialValues}
+              validationSchema={QuestionSchema}
+              onSubmit={(values, { setSubmitting, resetForm }) => {
+                const form = prepareForm(values);
+                const reset = () => resetForm(QuestionInitialValues);
+                props.submitHandler(form, setSubmitting, reset);
+              }}>
+              {({
+                values,
+                errors,
+                touched,
+                resetForm,
+                isSubmitting,
+                handleSubmit,
+                setFieldValue
+              }) => (
+                <Form onSubmit={handleSubmit}>
+                  <FastField
+                    name="title"
+                    render={({ field, form }) => (
+                      <FormItem
+                        required
+                        label="Cuerpo de la pregunta"
+                        hasFeedback
+                        validateStatus={
+                          form.touched.title && form.errors.title ? "error" : ""
+                        }
+                        help={(form.touched.title && form.errors.title) || ""}>
+                        <TextArea
+                          {...field}
+                          placeholder="Cuerpo de la pregunta"
+                          disabled={isSubmitting}
+                        />
+                      </FormItem>
                     )}
-                </div>
+                  />
 
-                <div className="field is-horizontal">
-                  <div className="field-body">
-                    <FieldArray
-                      name="options"
-                      render={() =>
-                        values.options.map(
-                          (option, index) =>
-                            index < 2 && (
-                              <div className="field" key={index}>
-                                <label className="label">
-                                  Opción {index + 1}:
-                                </label>
-                                <div className="control">
-                                  <Field
-                                    name={`options.${index}.text`}
-                                    value={option.text}
-                                    className={[
-                                      "input",
-                                      ((errors.options || [])[index] || {})
-                                        .text &&
-                                        ((touched.options || [])[index] || {})
-                                          .text &&
-                                        "is-danger",
-                                      !((errors.options || [])[index] || {})
-                                        .text &&
-                                        ((touched.options || [])[index] || {})
-                                          .text &&
-                                        "is-success"
-                                    ].join(" ")}
-                                    placeholder="Texto de la opción..."
-                                    disabled={props.loading}
-                                  />
-                                </div>
-                                {((errors.options || [])[index] || {}).text &&
-                                  ((touched.options || [])[index] || {})
-                                    .text && (
-                                    <p className="help is-danger">
-                                      {
-                                        ((errors.options || [])[index] || {})
-                                          .text
-                                      }
-                                    </p>
-                                  )}
-                              </div>
-                            )
-                        )
-                      }
-                    />
-                  </div>
-                </div>
+                  <Row gutter={16}>
+                    {values.options.map((option, index) => {
+                      const inputError = (
+                        ((errors || {}).options || [])[index] || {}
+                      ).text;
+                      const inputTouched = ((touched || {}).options || [])[
+                        index
+                      ];
+                      return (
+                        <Col xs={24} md={12} key={index}>
+                          <FastField
+                            name={`options[${index}].text`}
+                            render={({ field, form }) => (
+                              <FormItem
+                                required
+                                label={`Opción ${index + 1}`}
+                                hasFeedback
+                                validateStatus={
+                                  inputTouched && inputError ? "error" : ""
+                                }
+                                help={(inputTouched && inputError) || ""}>
+                                <Input
+                                  {...field}
+                                  placeholder={`Opción ${index + 1}`}
+                                  disabled={isSubmitting}
+                                />
+                              </FormItem>
+                            )}
+                          />
+                        </Col>
+                      );
+                    })}
+                  </Row>
 
-                <div className="field is-horizontal">
-                  <div className="field-body">
-                    <FieldArray
-                      name="options"
-                      render={() =>
-                        values.options.map(
-                          (option, index) =>
-                            index >= 2 && (
-                              <div className="field" key={index}>
-                                <label className="label">
-                                  Opción {index + 1}:
-                                </label>
-                                <div className="control">
-                                  <Field
-                                    name={`options.${index}.text`}
-                                    value={option.text}
-                                    className={[
-                                      "input",
-                                      ((errors.options || [])[index] || {})
-                                        .text &&
-                                        ((touched.options || [])[index] || {})
-                                          .text &&
-                                        "is-danger",
-                                      !((errors.options || [])[index] || {})
-                                        .text &&
-                                        ((touched.options || [])[index] || {})
-                                          .text &&
-                                        "is-success"
-                                    ].join(" ")}
-                                    placeholder="Texto de la opción..."
-                                    disabled={props.loading}
-                                  />
-                                </div>
-                                {((errors.options || [])[index] || {}).text &&
-                                  ((touched.options || [])[index] || {})
-                                    .text && (
-                                    <p className="help is-danger">
-                                      {
-                                        ((errors.options || [])[index] || {})
-                                          .text
-                                      }
-                                    </p>
-                                  )}
-                              </div>
-                            )
-                        )
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="field is-horizontal">
-                  <div className="field-body">
-                    <div className="field">
-                      <label className="label">Dificultad</label>
-                      <div className="control">
-                        <div
-                          className={[
-                            "select",
-                            errors.difficulty &&
-                              touched.difficulty &&
-                              "is-danger",
-                            !errors.difficulty &&
-                              touched.difficulty &&
-                              "is-success"
-                          ].join(" ")}>
-                          <Field
-                            name="difficulty"
-                            component="select"
-                            disabled={props.loading}>
-                            <option value="default" disabled>
-                              Elije una dificultad
-                            </option>
-                            <option value="easy">Fácil</option>
-                            <option value="medium">Media</option>
-                            <option value="hard">Difícil</option>
-                          </Field>
-                        </div>
-                      </div>
-                      {errors.difficulty &&
-                        touched.difficulty && (
-                          <p className="help is-danger">{errors.difficulty}</p>
+                  <Row gutter={16}>
+                    <Col xs={24} md={8}>
+                      <FastField
+                        name="difficulty"
+                        render={({ field, form }) => (
+                          <FormItem
+                            required
+                            label="Dificultad"
+                            hasFeedback
+                            validateStatus={
+                              form.touched.difficulty && form.errors.difficulty
+                                ? "error"
+                                : ""
+                            }
+                            help={
+                              (form.touched.difficulty &&
+                                form.errors.difficulty) ||
+                              ""
+                            }>
+                            <Select
+                              {...field}
+                              disabled={isSubmitting}
+                              defaultValue="default"
+                              onSelect={option =>
+                                setFieldValue("difficulty", option)
+                              }>
+                              <Option value="default" disabled>
+                                Elige una dificultad
+                              </Option>
+                              <Option value="easy">Fácil</Option>
+                              <Option value="medium">Media</Option>
+                              <Option value="hard">Difícil</Option>
+                            </Select>
+                          </FormItem>
                         )}
-                    </div>
-
-                    <div className="field">
-                      <label className="label">Categoria</label>
-                      <div className="control">
-                        <div
-                          className={[
-                            "select",
-                            props.loadingCategories && "is-loading",
-                            errors.category && touched.category && "is-danger",
-                            !errors.category && touched.category && "is-success"
-                          ].join(" ")}>
-                          <Field
-                            name="category"
-                            component="select"
-                            disabled={props.loading || props.loadingCategories}>
-                            <option value="default" disabled>
-                              Elije una categoría
-                            </option>
-                            {props.categories.map((category, index) => {
-                              return (
-                                <option key={index} value={category._id}>
-                                  {category.title}
-                                </option>
-                              );
-                            })}
-                          </Field>
-                        </div>
-                      </div>
-                      {errors.category &&
-                        touched.category && (
-                          <p className="help is-danger">{errors.category}</p>
+                      />
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <Field
+                        name="category"
+                        render={({ field, form }) => (
+                          <FormItem
+                            required
+                            label="Categoría"
+                            hasFeedback
+                            validateStatus={
+                              form.touched.category && form.errors.category
+                                ? "error"
+                                : ""
+                            }
+                            help={
+                              (form.touched.category && form.errors.category) ||
+                              ""
+                            }>
+                            <Select
+                              {...field}
+                              disabled={isSubmitting || props.loadingCategories}
+                              defaultValue="default"
+                              onSelect={option =>
+                                setFieldValue("category", option)
+                              }>
+                              <Option value="default" disabled>
+                                Elige una categoría
+                              </Option>
+                              {categories}
+                            </Select>
+                          </FormItem>
                         )}
-                    </div>
-
-                    <div className="field">
-                      <label className="label">Opción correcta</label>
-                      <div className="control">
-                        <div
-                          className={[
-                            "select",
-                            errors.correct_answer &&
-                              touched.correct_answer &&
-                              "is-danger",
-                            !errors.correct_answer &&
-                              touched.correct_answer &&
-                              "is-success"
-                          ].join(" ")}>
-                          <Field
-                            name="correct_answer"
-                            component="select"
-                            disabled={props.loading}>
-                            <option value="default" disabled>
-                              Elije la opción correcta
-                            </option>
-                            <option value="0">Opción 1</option>
-                            <option value="1">Opción 2</option>
-                            <option value="2">Opción 3</option>
-                            <option value="3">Opción 4</option>
-                          </Field>
-                        </div>
-                      </div>
-                      {errors.correct_answer &&
-                        touched.correct_answer && (
-                          <p className="help is-danger">
-                            {errors.correct_answer}
-                          </p>
+                      />
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <Field
+                        name="correct_answer"
+                        render={({ field, form }) => (
+                          <FormItem
+                            required
+                            label="Opción correcta"
+                            hasFeedback
+                            validateStatus={
+                              form.touched.correct_answer &&
+                              form.errors.correct_answer
+                                ? "error"
+                                : ""
+                            }
+                            help={
+                              (form.touched.correct_answer &&
+                                form.errors.correct_answer) ||
+                              ""
+                            }>
+                            <Select
+                              disabled={isSubmitting}
+                              defaultValue="default"
+                              {...field}
+                              onSelect={option =>
+                                setFieldValue("correct_answer", option)
+                              }>
+                              <Option value="default" disabled>
+                                Elige una opción
+                              </Option>
+                              <Option value="0">Opción 1</Option>
+                              <Option value="1">Opción 2</Option>
+                              <Option value="2">Opción 3</Option>
+                              <Option value="3">Opción 4</Option>
+                            </Select>
+                          </FormItem>
                         )}
-                    </div>
-                  </div>
-                </div>
+                      />
+                    </Col>
+                  </Row>
 
-                <div className="field">
-                  <label className="label">Enlace:</label>
-                  <div className="control">
-                    <Field
-                      name="link"
-                      className={[
-                        "input",
-                        errors.link && touched.link && "is-danger",
-                        !errors.link && touched.link && "is-success"
-                      ].join(" ")}
-                      placeholder="https://es.wikipedia.org/wiki/trivia"
-                      disabled={props.loading}
-                    />
-                  </div>
-                  {errors.link &&
-                    touched.link && (
-                      <p className="help is-danger">{errors.link}</p>
+                  <FastField
+                    name="link"
+                    render={({ field, form }) => (
+                      <FormItem
+                        label="Enlace"
+                        hasFeedback
+                        validateStatus={
+                          form.touched.link && form.errors.link ? "error" : ""
+                        }
+                        help={(form.touched.link && form.errors.link) || ""}>
+                        <Input
+                          {...field}
+                          disabled={isSubmitting}
+                          placeholder="https://es.wikipedia.org/wiki/trivia"
+                        />
+                      </FormItem>
                     )}
-                </div>
+                  />
 
-                <div className="field">
-                  <label className="label">Dato curioso:</label>
-                  <div className="control">
-                    <Field
-                      name="did_you_know"
-                      component="textarea"
-                      className={[
-                        "textarea",
-                        errors.did_you_know &&
-                          touched.did_you_know &&
-                          "is-danger",
-                        !errors.did_you_know &&
-                          touched.did_you_know &&
-                          "is-success"
-                      ].join(" ")}
-                      placeholder={`Ejemplo: Los antiguos Romanos usaban la palabra triviae para describir un camino que se dividía en dos. Triviae se formó de tri (tres) y viae (vías), que literalmente signifíca "tres caminos"`}
-                      disabled={props.loading}
-                    />
-                  </div>
-                  {errors.did_you_know &&
-                    touched.did_you_know && (
-                      <p className="help is-danger">{errors.did_you_know}</p>
+                  <FastField
+                    name="did_you_know"
+                    render={({ field, form }) => (
+                      <FormItem
+                        label="Dato curioso"
+                        hasFeedback
+                        validateStatus={
+                          form.touched.did_you_know && form.errors.did_you_know
+                            ? "error"
+                            : ""
+                        }
+                        help={
+                          (form.touched.did_you_know &&
+                            form.errors.did_you_know) ||
+                          ""
+                        }>
+                        <TextArea
+                          {...field}
+                          placeholder={`Ejemplo: Los antiguos Romanos usaban la palabra triviae para describir un camino que se dividía en dos. Triviae se formó de tri (tres) y viae (vías), que literalmente signifíca "tres caminos"`}
+                          disabled={isSubmitting}
+                        />
+                      </FormItem>
                     )}
-                </div>
-                <div className="buttons">
-                  <button
-                    type="submit"
-                    className={[
-                      "button",
-                      "is-info",
-                      props.loading ? "is-loading" : null
-                    ].join(" ")}
-                    disabled={props.loadingCategories  || props.error}>
+                  />
+
+                  <Button
+                    htmlType="submit"
+                    type="primary"
+                    loading={isSubmitting}
+                    style={{ marginRight: "8px" }}>
                     Enviar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      resetForm(QuestionInitialValues);
-                    }}
-                    className="button"
-                    disabled={props.loading}>
-                    Limpiar Formulario
-                  </button>
-                </div>
-              </Form>
-            )}
-          </Formik>
-        </Box>
-      </Column>
-    </Columns>
+                  </Button>
+                  <Button
+                    disabled={isSubmitting}
+                    onClick={() => resetForm(QuestionInitialValues)}>
+                    Limpiar formulario
+                  </Button>
+                </Form>
+              )}
+            </Formik>
+          </Spin>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

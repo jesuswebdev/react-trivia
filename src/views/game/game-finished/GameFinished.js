@@ -58,7 +58,7 @@ const GameFinished = props => {
               showIcon
               type="error"
               message="Error"
-              description={props.errorMessage}
+              description="Ocurrió un error al intentar guardar el juego"
             />
           )}
 
