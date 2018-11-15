@@ -8,6 +8,7 @@ import ShowQuestion from "./show-question/ShowQuestion";
 import GameFinished from "./game-finished/GameFinished";
 import { TIMER_TIME } from "../../config";
 import { http } from "../../utils";
+import { message } from "antd";
 
 class Game extends Component {
   state = {
@@ -36,12 +37,15 @@ class Game extends Component {
   }
 
   saveGame = game => {
+    const loadingMessage = message.loading("Guardando...", 0);
     this.setState({ saving: true, saved: false, error: false }, async () => {
       try {
         await http.post("/games", game);
         this.setState({ saving: false, saved: true });
       } catch (error) {
         this.setState({ saving: false, error: true });
+      } finally {
+        loadingMessage();
       }
     });
   };

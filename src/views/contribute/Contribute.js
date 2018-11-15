@@ -12,6 +12,7 @@ class Contribute extends Component {
   };
 
   componentDidMount() {
+    const loadingMessage = message.loading("Cargando categorías...", 0);
     this.setState(
       { loadingCategories: true, error: false, errorMessage: "" },
       async () => {
@@ -26,6 +27,8 @@ class Contribute extends Component {
             error: true,
             errorMessage: "Ocurrió un error al intentar cargar las categorías"
           });
+        } finally {
+          loadingMessage();
         }
       }
     );
@@ -34,11 +37,13 @@ class Contribute extends Component {
   questionSent = () => message.success("Tu pregunta se envió con éxito");
 
   submitQuestion = (question, setSubmitting, reset) => {
+    const loadingMessage = message.loading("Enviando...", 0);
     setSubmitting(true);
     this.setState({ error: false, errorMessage: "" }, async () => {
       try {
         await http.post("/questions", question);
         setSubmitting(false);
+        loadingMessage();
         this.questionSent();
         reset();
       } catch ({ response: { data } }) {
@@ -46,6 +51,7 @@ class Contribute extends Component {
           error: true,
           errorMessage: "Ocurrió un error al intentar enviar tu pregunta"
         });
+        loadingMessage();
         setSubmitting(false);
       }
     });
