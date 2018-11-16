@@ -31,6 +31,8 @@ class Game extends Component {
   };
   componentWillUnmount() {
     this.props.destroyGame();
+    clearTimeout(this.props.timeoutId);
+    clearInterval(this.props.intervalId);
   }
   componentDidMount() {
     this.props.resetTimer();
