@@ -5,6 +5,7 @@ import * as Yup from "yup";
 
 const victorySchema = Yup.object().shape({
   name: Yup.string()
+    .trim()
     .min(2, "El nombre es muy corto")
     .max(16, "El nombre es muy largo")
     .required("Debes introducir un nombre")
