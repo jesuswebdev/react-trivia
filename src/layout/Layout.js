@@ -3,17 +3,37 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { Layout } from "antd";
 
-const AppLayout = ({ children }) => {
-  const { Content } = Layout;
-  return (
-    <Layout>
-      <Header />
-      <Content style={{ minHeight: window.innerHeight - 133, padding: "32px" }}>
-        {children}
-      </Content>
-      <Footer />
-    </Layout>
-  );
-};
+class AppLayout extends React.Component {
+  state = {
+    minHeight: window.innerHeight - 133,
+    padding: "32px"
+  };
+
+  setHeight = () => this.setState({ minHeight: window.innerHeight - 133 });
+
+  componentDidMount() {
+    window.addEventListener("resize", this.setHeight);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.setHeight);
+  }
+
+  shouldComponentUpdate(_, nextState) {
+    return this.state.minHeight !== nextState.minHeight;
+  }
+
+  render() {
+    const { Content } = Layout;
+    const { children } = this.props;
+    return (
+      <Layout>
+        <Header />
+        <Content style={this.state}>{children}</Content>
+        <Footer />
+      </Layout>
+    );
+  }
+}
 
 export default AppLayout;
