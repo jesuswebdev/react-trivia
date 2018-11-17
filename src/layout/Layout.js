@@ -19,10 +19,6 @@ class AppLayout extends React.Component {
     window.removeEventListener("resize", this.setHeight);
   }
 
-  shouldComponentUpdate(_, nextState) {
-    return this.state.minHeight !== nextState.minHeight;
-  }
-
   render() {
     const { Content } = Layout;
     const { children } = this.props;
