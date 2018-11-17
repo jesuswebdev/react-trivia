@@ -22,19 +22,25 @@ const Home = () => {
           }}>
           El Juego de Preguntas
         </h1>
-        <Button type="primary" size="large" block>
-          <Link to="/nuevo">Jugar</Link>
-        </Button>
-        <Button
-          type="primary"
-          size="large"
-          block
-          style={{ margin: "12px 0px" }}>
-          <Link to="/top">Top 10</Link>
-        </Button>
-        <Button type="primary" size="large" block>
-          <Link to="/contribuir">Contribuir</Link>
-        </Button>
+        <Link to="/nuevo">
+          <Button type="primary" size="large" block>
+            Jugar
+          </Button>
+        </Link>
+        <Link to="/top">
+          <Button
+            type="primary"
+            size="large"
+            block
+            style={{ margin: "12px 0px" }}>
+            Top 10
+          </Button>
+        </Link>
+        <Link to="/contribuir">
+          <Button type="primary" size="large" block>
+            Contribuir
+          </Button>
+        </Link>
       </Col>
     </Row>
   );
