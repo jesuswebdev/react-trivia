@@ -1,7 +1,18 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Formik, FastField, Field } from "formik";
 import * as Yup from "yup";
-import { Row, Col, Form, Card, Input, Select, Button, Alert } from "antd";
+import {
+  Row,
+  Col,
+  Form,
+  Card,
+  Input,
+  Select,
+  Button,
+  Alert,
+  Breadcrumb
+} from "antd";
 
 const QuestionSchema = Yup.object().shape({
   title: Yup.string()
@@ -75,6 +86,12 @@ const ContributeForm = props => {
   return (
     <Row type="flex" justify="center">
       <Col span={22}>
+        <Breadcrumb style={{ paddingBottom: "16px" }}>
+          <Breadcrumb.Item>
+            <Link to="/">Inicio</Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>Contribuir</Breadcrumb.Item>
+        </Breadcrumb>
         <Card>
           <h1 style={{ fontSize: "1.5rem", textAlign: "center" }}>
             Proponer una pregunta nueva

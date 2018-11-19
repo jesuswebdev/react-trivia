@@ -33,7 +33,7 @@ const Home = () => {
             size="large"
             block
             style={{ margin: "12px 0px" }}>
-            Top 10
+            Tabla de Clasificación
           </Button>
         </Link>
         <Link to="/contribuir">

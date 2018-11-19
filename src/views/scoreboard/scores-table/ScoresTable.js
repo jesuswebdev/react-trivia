@@ -1,5 +1,6 @@
 import React from "react";
-import { Row, Col, Card, Table, Select, Form, Alert } from "antd";
+import { Link } from "react-router-dom";
+import { Row, Col, Card, Table, Select, Form, Alert, Breadcrumb } from "antd";
 
 import { transformDate } from "../../../utils";
 
@@ -26,6 +27,12 @@ const ScoresTable = props => {
   return (
     <Row type="flex" justify="center">
       <Col span={22}>
+        <Breadcrumb style={{ paddingBottom: "16px" }}>
+          <Breadcrumb.Item>
+            <Link to="/">Inicio</Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>Tabla de Clasificación</Breadcrumb.Item>
+        </Breadcrumb>
         <Card>
           <h1 style={{ fontSize: "1.5rem", textAlign: "center" }}>
             Tabla de Clasificación
