@@ -17,6 +17,11 @@ app.get("/*", function(req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
+app.get("/robots.txt", function(req, res) {
+  res.type("text/plain");
+  res.send("User-agent: *\nDisallow: /");
+});
+
 app.listen(process.env.PORT || 8000, () => {
   console.log("server running at port 8000");
 });
