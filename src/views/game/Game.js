@@ -10,6 +10,8 @@ import { TIMER_TIME } from "../../config";
 import { http } from "../../utils";
 import { message } from "antd";
 
+import { setUsername } from "../../state/user/actions";
+
 class Game extends Component {
   state = {
     answered: false,
@@ -43,6 +45,7 @@ class Game extends Component {
     this.setState({ saving: true, saved: false, error: false }, async () => {
       try {
         await http.post("/games", game);
+        this.props.setUsername(game.name);
         this.setState({ saving: false, saved: true });
       } catch (error) {
         this.setState({ saving: false, error: true });
@@ -146,6 +149,7 @@ class Game extends Component {
           totalQuestions={this.props.questions.length}
           error={error}
           gameSaved={saved}
+          username={this.props.username}
         />
       );
     }
@@ -168,6 +172,7 @@ class Game extends Component {
 const mapStateToProps = state => {
   return {
     gameToken: state.game.token,
+    username: state.user.username,
     questionStarted: state.game.questionStarted,
     questions: state.game.questions,
     currentQuestion: state.game.currentQuestion,
@@ -208,6 +213,9 @@ const mapDispatchToProps = dispatch => {
     },
     resetTimer: () => {
       dispatch(timerActions.reset());
+    },
+    setUsername: name => {
+      dispatch(setUsername(name));
     }
   };
 };

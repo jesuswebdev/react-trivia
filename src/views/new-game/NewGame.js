@@ -127,7 +127,7 @@ export class NewGame extends Component {
 
 const mapStateToProps = state => {
   return {
-    gotTheQuestions: state.game.questions.length > 0
+    gotTheQuestions: state.game.token !== null
   };
 };
 

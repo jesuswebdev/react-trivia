@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Formik } from "formik";
 import { Form, Input, Button } from "antd";
 import * as Yup from "yup";
@@ -18,7 +19,7 @@ const FormItem = Form.Item;
 const VictoryForm = props => {
   return (
     <Formik
-      initialValues={{ name: "" }}
+      initialValues={{ name: props.username }}
       validationSchema={victorySchema}
       onSubmit={({ name }) => {
         props.submitHandler(name);
@@ -58,6 +59,16 @@ const VictoryForm = props => {
       )}
     </Formik>
   );
+};
+
+VictoryForm.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  username: PropTypes.string
+};
+
+VictoryForm.defaultProps = {
+  loading: false,
+  username: ""
 };
 
 export default VictoryForm;

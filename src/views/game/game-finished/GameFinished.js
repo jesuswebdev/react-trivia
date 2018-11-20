@@ -66,6 +66,7 @@ const GameFinished = props => {
             <GameFinishedForm
               submitHandler={props.submitHandler}
               loading={props.loading}
+              username={props.username}
             />
           )}
           {props.gameSaved && (
@@ -77,16 +78,19 @@ const GameFinished = props => {
                 message="Guardado"
                 description="El juego se guardó con éxito"
               />
-
-              <Button
-                type="primary"
-                block
-                style={{ marginBottom: "12px", marginTop: "24px" }}>
-                <Link to="/nuevo">Jugar otra vez</Link>
-              </Button>
-              <Button type="primary" block>
-                <Link to="/">Ir al menú principal</Link>
-              </Button>
+              <Link to="/nuevo">
+                <Button
+                  type="primary"
+                  block
+                  style={{ marginBottom: "12px", marginTop: "24px" }}>
+                  Jugar otra vez
+                </Button>
+              </Link>
+              <Link to="/">
+                <Button type="primary" block>
+                  Ir al menú principal
+                </Button>
+              </Link>
             </Fragment>
           )}
         </Card>
