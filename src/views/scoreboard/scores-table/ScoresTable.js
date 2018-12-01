@@ -5,23 +5,23 @@ import { Row, Col, Card, Table, Select, Form, Alert, Breadcrumb } from "antd";
 import { transformDate } from "../../../utils";
 
 const columns = [
-  { title: "#", key: "position", width: 20, render: (_, __, i) => i + 1 },
-  { title: "Jugador", dataIndex: "user", width: 220 },
+  { title: "#", key: "position", width: 50, render: (_, __, i) => i + 1 },
+  { title: "Jugador", dataIndex: "user", width: 250 },
   {
     title: "Respuesta Correctas",
     dataIndex: "total_correct_answers",
-    width: 150
+    width: 171
   },
   {
     title: "Duración del Juego",
     dataIndex: "duration",
-    width: 134,
+    width: 150,
     render: duration => `${duration} segundo${duration === 1 ? "" : "s"}`
   },
   {
     title: "Fecha",
     dataIndex: "createdAt",
-    width: 148,
+    width: 170,
     render: date => transformDate(date)
   }
 ];
