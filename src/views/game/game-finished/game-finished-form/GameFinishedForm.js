@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Formik } from "formik";
 import { Form, Input, Button } from "antd";
@@ -53,7 +54,10 @@ const VictoryForm = props => {
             type="primary"
             loading={props.loading}
             block>
-            Enviar
+            Guardar
+          </Button>
+          <Button block style={{ marginTop: "16px" }}>
+            <Link to="/">Continuar sin guardar</Link>
           </Button>
         </Form>
       )}

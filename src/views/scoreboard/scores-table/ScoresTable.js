@@ -5,17 +5,23 @@ import { Row, Col, Card, Table, Select, Form, Alert, Breadcrumb } from "antd";
 import { transformDate } from "../../../utils";
 
 const columns = [
-  { title: "#", key: "position", render: (_, __, i) => i + 1 },
-  { title: "Jugador", dataIndex: "user" },
-  { title: "Respuesta Correctas", dataIndex: "total_correct_answers" },
+  { title: "#", key: "position", width: 20, render: (_, __, i) => i + 1 },
+  { title: "Jugador", dataIndex: "user", width: 220 },
+  {
+    title: "Respuesta Correctas",
+    dataIndex: "total_correct_answers",
+    width: 150
+  },
   {
     title: "Duración del Juego",
     dataIndex: "duration",
+    width: 134,
     render: duration => `${duration} segundo${duration === 1 ? "" : "s"}`
   },
   {
     title: "Fecha",
     dataIndex: "createdAt",
+    width: 148,
     render: date => transformDate(date)
   }
 ];
@@ -71,6 +77,7 @@ const ScoresTable = props => {
             rowKey={item => item._id}
             pagination={{ hideOnSinglePage: true }}
             locale={{ emptyText: "No hay nada para mostrar" }}
+            scroll={{ x: 800 }}
           />
         </Card>
       </Col>
