@@ -1,226 +1,187 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
-import * as gameActions from "../../state/game/actions";
-import * as timerActions from "../../state/timer/actions";
-import StartQuestion from "./start-question/StartQuestion";
-import ShowQuestion from "./show-question/ShowQuestion";
-import GameFinished from "./game-finished/GameFinished";
+import StartQuestion from "./StartQuestion";
+import ShowQuestion from "./ShowQuestion";
+import GameFinished from "./GameFinished";
 import { TIMER_TIME } from "../../config";
 import { http } from "../../utils";
 import { message } from "antd";
 
-import { setUsername } from "../../state/user/actions";
+const Game = props => {
+  const [gameState, setGameState] = useState(null);
+  const [questionStage, setQuestionStage] = useState("start-question"); //start-question, started, answered
+  const [validatingAnswer, setValidatingAnswer] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
+  const [answered, setAnswered] = useState(false);
+  const [questionStart, setQuestionStart] = useState(0);
+  const [loadingQuestion, setLoadingQuestion] = useState(false);
+  const [redirectOnError, setRedirectOnError] = useState(false);
+  const [gameFinished, setGameFinished] = useState(false);
+  const [error, setError] = useState(false);
+  const [retryProperties, setRetryProperties] = useState(undefined);
 
-class Game extends Component {
-  state = {
-    answered: false,
-    correctAnswer: false,
-    selectedOption: null,
-    saving: false,
-    saved: false,
-    error: false
+  const loadQuestion = async state => {
+    try {
+      setLoadingQuestion(true);
+      const { data } = await http.get(
+        `/games/${state.game.id}/next-question?token=${state.token}`
+      );
+      setGameState(data);
+    } catch (error) {
+      console.error(error);
+      setRedirectOnError(true);
+    } finally {
+      setLoadingQuestion(false);
+    }
   };
 
-  setAnswered = answered => this.setState({ answered });
-  setSelectedOption = selectedOption => this.setState({ selectedOption });
-  setCorrectAnswer = correctAnswer => this.setState({ correctAnswer });
+  useEffect(() => {
+    loadQuestion(props.location.state);
+    props.history.replace();
+  }, []);
 
-  resetQuestion = () => {
-    this.setAnswered(false);
-    this.setSelectedOption(null);
-    this.setCorrectAnswer(false);
-  };
-  componentWillUnmount() {
-    this.props.destroyGame();
-    clearTimeout(this.props.timeoutId);
-    clearInterval(this.props.intervalId);
-  }
-  componentDidMount() {
-    this.props.resetTimer();
-  }
-
-  saveGame = game => {
-    const loadingMessage = message.loading("Guardando...", 0);
-    this.setState({ saving: true, saved: false, error: false }, async () => {
-      try {
-        await http.post("/games", game);
-        this.props.setUsername(game.name);
-        this.setState({ saving: false, saved: true });
-      } catch (error) {
-        this.setState({ saving: false, error: true });
-      } finally {
-        loadingMessage();
+  useEffect(
+    () => {
+      if (questionStage === "started") {
+        setQuestionStart(new Date().getTime());
       }
-    });
+      if (questionStage === "start-question") {
+        setQuestionStart(0);
+      }
+    },
+    [questionStage]
+  );
+
+  const retryHandler = async () => {
+    return await selectOptionHandler(
+      retryProperties.question.selected_option,
+      retryProperties
+    );
   };
 
-  prepareGame = name => {
-    const questions = this.props.questions.map(q => {
-      return {
-        question: q._id,
-        answered: q.answered,
-        selected_option: q.selected_option || 0,
-        duration: q.duration,
-        timed_out: q.timedOut
-      };
-    });
-
-    return {
-      questions,
-      token: this.props.gameToken,
-      name
+  const selectOptionHandler = async (id, options) => {
+    if (!timedOut) {
+      setAnswered(true);
+    }
+    setValidatingAnswer(true);
+    const loadingMessage = message.loading(
+      timedOut ? "Actualizando el juego" : "Validando tu respuesta",
+      0
+    );
+    const answerProperties = {
+      token: gameState.token,
+      question: {
+        id: gameState.question.id,
+        selected_option: id,
+        answered: true,
+        duration: new Date().getTime() - questionStart,
+        answered_at: new Date().getTime()
+      }
     };
+    try {
+      const { data } = await http.post(
+        `/games/${gameState.game.id}/answer`,
+        options || answerProperties
+      );
+      setGameState({ ...gameState, ...data });
+      setError(false);
+    } catch (error) {
+      console.error(error);
+      if ((error || {}).message === "Network Error") {
+        setError("network_error");
+        setRetryProperties(answerProperties);
+      }
+    } finally {
+      setValidatingAnswer(false);
+      loadingMessage();
+    }
   };
 
-  submitGame = name => {
-    this.saveGame(this.prepareGame(name));
+  const resetState = () => {
+    setValidatingAnswer(false);
+    setTimedOut(false);
+    setAnswered(false);
+    setQuestionStart(0);
   };
 
-  startQuestion = () => {
-    const interval = setInterval(() => {
-      this.props.timerTick();
-    }, 1000);
-    const timeout = setTimeout(() => {
-      this.props.timerTimedOut();
-      clearInterval(interval);
-    }, TIMER_TIME * 1000);
-    this.props.setTimerIds(interval, timeout);
-    this.props.startQuestion();
+  const onClickNextQuestion = () => {
+    if (!gameState.game.remaining_attempts) {
+      return setGameFinished(true);
+    }
+    setQuestionStage("start-question");
+    loadQuestion(gameState);
+    resetState();
   };
 
-  selectOptionHandler = async ({ target: { id } }) => {
-    let options = this.props.questions[this.props.currentQuestion].options;
-    let correct = options.find(o => o.option_id === parseInt(id, 10))
-      .correct_answer;
-
-    this.setAnswered(true);
-    this.setCorrectAnswer(correct);
-    this.setSelectedOption(parseInt(id, 10));
-
-    let stats = {
-      position: this.props.currentQuestion,
-      duration: TIMER_TIME - this.props.timerSeconds,
-      option: id
+  const onTimedOut = async () => {
+    setTimedOut(true);
+    setValidatingAnswer(true);
+    const loadingMessage = message.loading("Actualizando el juego", 0);
+    const answerProperties = {
+      token: gameState.token,
+      question: {
+        id: gameState.question.id,
+        answered: false,
+        duration: TIMER_TIME * 1000,
+        timed_out: true,
+        answered_at: new Date().getTime()
+      }
     };
-
-    this.props.selectAnswer(stats, correct);
-    clearTimeout(this.props.timeoutId);
-    clearInterval(this.props.intervalId);
-    this.props.resetTimer();
-  };
-
-  onClickNextQuestion = () => {
-    this.props.resetTimer();
-    this.resetQuestion();
-    if (this.props.currentQuestion + 1 === this.props.questions.length) {
-      this.props.setVictory();
-      return;
-    }
-    if (this.props.currentQuestion < this.props.questions.length) {
-      this.props.goToNextQuestion();
-    }
-  };
-
-  render() {
-    if (!this.props.gameToken) {
-      return <Redirect to="/nuevo" />;
-    }
-    if (!this.props.questionStarted) {
-      return (
-        <StartQuestion
-          currentQuestion={this.props.currentQuestion + 1}
-          questionCount={this.props.questions.length}
-          category={
-            this.props.questions[this.props.currentQuestion].category.title
-          }
-          startQuestion={this.startQuestion}
-        />
+    try {
+      const { data } = await http.post(
+        `/games/${gameState.game.id}/answer`,
+        answerProperties
       );
+      setGameState({ ...gameState, ...data });
+      setError(false);
+    } catch (error) {
+      console.error(error);
+      if ((error || {}).message === "Network Error") {
+        setError("network_error");
+        setRetryProperties(answerProperties);
+      }
+    } finally {
+      setValidatingAnswer(false);
+      loadingMessage();
     }
-    if (this.props.victory || this.props.timedOut) {
-      const { saving, saved, error } = this.state;
-      return (
-        <GameFinished
-          submitHandler={this.submitGame}
-          timedOut={this.props.timedOut}
-          loading={saving}
-          correctAnswers={this.props.totalCorrectAnswers}
-          totalQuestions={this.props.questions.length}
-          error={error}
-          gameSaved={saved}
-          username={this.props.username}
-        />
-      );
-    }
+  };
+  const startQuestion = () => {
+    setQuestionStage("started");
+  };
+  if (redirectOnError) {
+    return <Redirect to="/" />;
+  }
 
+  if (gameFinished) {
+    return <GameFinished game={gameState.game} />;
+  }
+
+  if (questionStage === "start-question") {
     return (
-      <ShowQuestion
-        currentQuestion={this.props.currentQuestion + 1}
-        questionCount={this.props.questions.length}
-        question={this.props.questions[this.props.currentQuestion]}
-        selectOptionHandler={this.selectOptionHandler}
-        answered={this.state.answered}
-        correct={this.state.correctAnswer}
-        selectedOption={this.state.selectedOption}
-        reset={this.onClickNextQuestion}
+      <StartQuestion
+        question={(gameState || {}).question}
+        start={startQuestion}
+        loading={loadingQuestion}
       />
     );
   }
-}
-
-const mapStateToProps = state => {
-  return {
-    gameToken: state.game.token,
-    username: state.user.username,
-    questionStarted: state.game.questionStarted,
-    questions: state.game.questions,
-    currentQuestion: state.game.currentQuestion,
-    timedOut: state.game.timedOut,
-    intervalId: state.timer.intervalId,
-    timeoutId: state.timer.timeoutId,
-    victory: state.game.victory,
-    timerSeconds: state.timer.seconds,
-    totalCorrectAnswers: state.game.correct_answers
-  };
+  if (questionStage === "started") {
+    return (
+      <ShowQuestion
+        question={gameState.question}
+        selectOptionHandler={selectOptionHandler}
+        onTimedOut={onTimedOut}
+        validatingAnswer={validatingAnswer}
+        timedOut={timedOut}
+        answered={answered}
+        remainingAttempts={gameState.game.remaining_attempts}
+        response={gameState.answer}
+        nextQuestion={onClickNextQuestion}
+        error={error}
+        retry={retryHandler}
+      />
+    );
+  }
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    destroyGame: () => {
-      dispatch(gameActions.destroyGame());
-    },
-    startQuestion: () => {
-      dispatch(gameActions.startQuestion());
-    },
-    setTimerIds: (interval, timeout) => {
-      dispatch(timerActions.setTimerIds(interval, timeout));
-    },
-    timerTick: () => {
-      dispatch(timerActions.tick());
-    },
-    timerTimedOut: () => {
-      dispatch(gameActions.timerTimedOut());
-    },
-    selectAnswer: (stats, correct) => {
-      dispatch(gameActions.selectAnswer(stats, correct));
-    },
-    setVictory: () => {
-      dispatch(gameActions.setVictory());
-    },
-    goToNextQuestion: () => {
-      dispatch(gameActions.nextQuestion());
-    },
-    resetTimer: () => {
-      dispatch(timerActions.reset());
-    },
-    setUsername: name => {
-      dispatch(setUsername(name));
-    }
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Game);
+export default Game;

@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, Card, Table, Select, Form, Alert, Breadcrumb } from "antd";
+import { Row, Col, Card, Table, Alert, Breadcrumb } from "antd";
 
-import { transformDate } from "../../../utils";
+import { transformDate, parseGameDuration } from "../../../utils";
 
 const columns = [
-  { title: "#", key: "position", width: 50, render: (_, __, i) => i + 1 },
+  { title: "#", key: "position", dataIndex: "position", width: 50 },
   { title: "Jugador", dataIndex: "user", width: 250 },
   {
     title: "Respuesta Correctas",
@@ -16,20 +16,30 @@ const columns = [
     title: "Duración del Juego",
     dataIndex: "duration",
     width: 150,
-    render: duration => `${duration} segundo${duration === 1 ? "" : "s"}`
+    render: duration => parseGameDuration(duration)
   },
   {
     title: "Fecha",
     dataIndex: "createdAt",
     width: 170,
     render: date => transformDate(date)
+  },
+  {
+    title: "Ir al juego",
+    dataIndex: "_id",
+    width: 50,
+    render: (id, game) => {
+      return (
+        <Link
+          to={{ pathname: `/juego/${id}`, state: { position: game.position } }}>
+          Ir
+        </Link>
+      );
+    }
   }
 ];
 
-const FormItem = Form.Item;
-
 const ScoresTable = props => {
-  const Option = Select.Option;
   return (
     <Row type="flex" justify="center">
       <Col span={22}>
@@ -50,26 +60,6 @@ const ScoresTable = props => {
               banner
             />
           )}
-          <Form
-            layout="inline"
-            style={{ textAlign: "center", paddingBottom: "5px" }}>
-            <FormItem label="Dificultad">
-              <Select defaultValue="easy" onChange={props.selectDifficulty}>
-                <Option value="easy">Fácil</Option>
-                <Option value="medium">Media</Option>
-                <Option value="hard">Difícil</Option>
-              </Select>
-            </FormItem>
-
-            <FormItem label="Modo de Juego">
-              <Select defaultValue="fast" onChange={props.selectMode}>
-                <Option value="fast">Rápido</Option>
-                <Option value="normal">Normal</Option>
-                <Option value="extended">Extendido</Option>
-              </Select>
-            </FormItem>
-          </Form>
-
           <Table
             columns={columns}
             dataSource={props.stats}
