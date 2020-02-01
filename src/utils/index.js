@@ -1,20 +1,14 @@
 import axios from "axios";
+import { API_URL, GUEST_TOKEN } from "../config";
 
-export const shuffleOptions = options => {
-  let ramdomized = [];
-  let finished = false;
-
-  while (!finished) {
-    let index = Math.floor(Math.random() * 4);
-
-    if (!ramdomized.some(r => r === index)) {
-      ramdomized.push(index);
-    }
-    if (ramdomized.length === 4) {
-      finished = true;
-    }
-  }
-  return [...Array(4)].map((_, i) => options[ramdomized[i]]);
+export const parseGameDuration = duration => {
+  duration = Math.floor(duration / 1000);
+  return `${
+    duration / 60 > 1 ? `${Math.floor(duration / 60)}m` : ""
+  } ${duration % 60}s`;
+};
+export const parseQuestionDuration = duration => {
+  return Number(duration / 1000).toFixed(1);
 };
 
 const addZero = number => {
@@ -33,5 +27,8 @@ export const transformDate = date => {
 };
 
 export const http = axios.create({
-  baseURL: process.env.REACT_APP_API_URL
+  baseURL: API_URL,
+  headers: {
+    Authorization: "Bearer " + GUEST_TOKEN
+  }
 });

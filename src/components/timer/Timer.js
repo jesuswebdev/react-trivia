@@ -1,11 +1,53 @@
-import React from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
 import { TIMER_TIME } from "../../config";
 import { Progress } from "antd";
 
 const secondsToPercentage = seconds => Math.floor((seconds / TIMER_TIME) * 100);
 
-export const Timer = ({ seconds }) => {
+export const Timer = ({ onTimedOut, stop }) => {
+  const [seconds, setSeconds] = useState(TIMER_TIME);
+  const timeoutId = useRef();
+  const intervalId = useRef();
+  useEffect(() => {
+    setSeconds(TIMER_TIME);
+    const tId = setTimeout(() => {
+      clearInterval(intervalId.current);
+      setSeconds(0);
+      onTimedOut();
+    }, TIMER_TIME * 1000);
+    timeoutId.current = tId;
+
+    return () => {
+      clearTimeout(timeoutId.current);
+      clearInterval(intervalId.current);
+    };
+  }, []);
+
+  useEffect(
+    () => {
+      if (seconds > 0) {
+        const iId = setInterval(() => {
+          setSeconds(seconds - 1);
+        }, 1000);
+        intervalId.current = iId;
+      }
+      return () => {
+        clearInterval(intervalId.current);
+      };
+    },
+    [seconds]
+  );
+
+  useEffect(
+    () => {
+      if (stop) {
+        clearTimeout(timeoutId.current);
+        clearInterval(intervalId.current);
+      }
+    },
+    [stop]
+  );
+
   return (
     <Progress
       style={{ display: "block", textAlign: "center", marginBottom: "24px" }}
@@ -18,10 +60,4 @@ export const Timer = ({ seconds }) => {
   );
 };
 
-const mapStateToProps = state => {
-  return {
-    seconds: state.timer.seconds
-  };
-};
-
-export default connect(mapStateToProps)(Timer);
+export default Timer;

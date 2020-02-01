@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { http } from "../../../utils";
 import { message } from "antd";
 
-const StatsProvider = ({ render }) => {
-  const [stats, setStats] = useState([]);
+const DataProvider = ({ id, render }) => {
+  const [game, setGame] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const getStats = async () => {
+    const getGame = async () => {
       const loadingMessage = message.loading("Cargando...", 0);
       setLoading(true);
       setError(false);
       try {
-        const { data } = await http.get("/games/top");
-        setStats(data);
+        const { data } = await http.get("/games/" + id);
+        setGame(data);
       } catch (error) {
         setError(true);
       } finally {
@@ -22,13 +22,13 @@ const StatsProvider = ({ render }) => {
         loadingMessage();
       }
     };
-    getStats();
+    getGame();
   }, []);
   return render({
     loading,
     error,
-    stats
+    game
   });
 };
 
-export default StatsProvider;
+export default DataProvider;

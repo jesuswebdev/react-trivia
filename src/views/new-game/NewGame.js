@@ -1,59 +1,52 @@
 import React, { Component, Fragment } from "react";
-import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import { http } from "../../utils";
-import { gameStartSuccess } from "../../state/game/actions";
 import {
   Row,
   Col,
   Card,
-  Select,
   Form,
+  Input,
   Button,
   Alert,
   message,
   Breadcrumb
 } from "antd";
+import { Formik, FastField } from "formik";
+import * as Yup from "yup";
 
 const FormItem = Form.Item;
-const Option = Select.Option;
 
 export class NewGame extends Component {
   state = {
-    difficulty: "default",
-    question_count: 0,
     loading: false,
-    error: false
+    error: false,
+    response: null
   };
 
-  selectDifficulty = difficulty => this.setState({ difficulty });
-
-  selectMode = question_count => this.setState({ question_count });
-
-  onSubmitHandler = () => {
-    const loadingMessage = message.loading("Cargando preguntas...", 0);
-    const { difficulty, question_count } = this.state;
-    const url = `/questions/newgame/${difficulty}?question_count=${question_count}`;
+  onSubmitHandler = ({ name }) => {
+    const loadingMessage = message.loading("Creando el juego...", 0);
     this.setState({ loading: true, error: false }, async () => {
+      let response;
+      let errored = false;
       try {
-        const { data } = await http.get(url);
-        this.setState({ loading: false });
-        this.props.startGame(data);
+        const { data } = await http.post("/games", { name });
+        localStorage.setItem("username", name);
+        response = data;
       } catch (error) {
-        this.setState({ loading: false, error: true });
+        errored = true;
       } finally {
         loadingMessage();
+        this.setState({ loading: false, error: errored, response });
       }
     });
   };
 
   render() {
-    const { difficulty, question_count, loading, error } = this.state;
-    if (this.props.gotTheQuestions) {
-      return <Redirect to="/jugar" />;
+    const { loading, error, response } = this.state;
+    if (!!response) {
+      return <Redirect to={{ pathname: "/jugar", state: response }} />;
     }
-
-    let canSubmit = difficulty !== "default" && question_count > 0;
 
     return (
       <Fragment>
@@ -68,7 +61,7 @@ export class NewGame extends Component {
           </Col>
         </Row>
         <Row type="flex" justify="center">
-          <Col xs={22} sm={16} md={16} lg={10}>
+          <Col xs={22} sm={16} md={16} lg={8}>
             <Card>
               <h1 style={{ fontSize: "1.5rem", textAlign: "center" }}>
                 Juego nuevo
@@ -82,41 +75,56 @@ export class NewGame extends Component {
                   description="Ocurrió un error al intentar conectar con el servidor"
                 />
               )}
-              <FormItem label="Dificultad">
-                <Select
-                  value={difficulty}
-                  onSelect={this.selectDifficulty}
-                  style={{ width: "100%" }}
-                  disabled={loading}>
-                  <Option value="default" disabled>
-                    Elige una dificultad
-                  </Option>
-                  <Option value="easy">Fácil</Option>
-                  <Option value="medium">Media</Option>
-                  <Option value="hard">Difícil</Option>
-                </Select>
-              </FormItem>
-              <FormItem label="Modo de juego">
-                <Select
-                  value={question_count}
-                  onSelect={this.selectMode}
-                  style={{ width: "100%" }}
-                  disabled={loading}>
-                  <Option value={0} disabled>
-                    Elige un modo de juego
-                  </Option>
-                  <Option value={10}>Rápido (10 preguntas)</Option>
-                  <Option value={25}>Normal (25 preguntas)</Option>
-                  <Option value={50}>Extendido (50 preguntas)</Option>
-                </Select>
-              </FormItem>
-              <Button
-                type="primary"
-                block
-                onClick={this.onSubmitHandler}
-                disabled={!canSubmit || loading}>
-                Comenzar
-              </Button>
+              <Formik
+                enableReinitialize
+                initialValues={{ name: localStorage.getItem("username") || "" }}
+                validationSchema={{
+                  name: Yup.string()
+                    .trim()
+                    .min(2)
+                    .max(32)
+                    .required()
+                }}
+                onSubmit={this.onSubmitHandler}
+                render={props => {
+                  return (
+                    <>
+                      <FastField
+                        name="name"
+                        render={({ field, form }) => (
+                          <FormItem
+                            label="Nombre"
+                            hasFeedback
+                            validateStatus={
+                              form.touched.name && form.errors.name
+                                ? "error"
+                                : ""
+                            }
+                            help={
+                              (form.touched.name && form.errors.name) || ""
+                            }>
+                            <Input
+                              {...field}
+                              disabled={props.isSubmitting}
+                              placeholder="Nombre de usuario"
+                            />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Button
+                        type="primary"
+                        block
+                        onClick={props.handleSubmit}
+                        disabled={
+                          (props.touched.name && props.errors.name) || loading
+                        }>
+                        Comenzar
+                      </Button>
+                    </>
+                  );
+                }}
+              />
             </Card>
           </Col>
         </Row>
@@ -125,21 +133,4 @@ export class NewGame extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    gotTheQuestions: state.game.token !== null
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    startGame: options => {
-      dispatch(gameStartSuccess(options));
-    }
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(NewGame);
+export default NewGame;

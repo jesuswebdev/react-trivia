@@ -27,10 +27,6 @@ const QuestionSchema = Yup.object().shape({
     })
   ),
   category: Yup.string().notOneOf(["default"], "Debes elegir una categoría"),
-  difficulty: Yup.string().oneOf(
-    ["easy", "medium", "hard"],
-    "Debes elegir una dificultad"
-  ),
   correct_answer: Yup.string().oneOf(
     ["0", "1", "2", "3"],
     "Debes elegir una opción correcta"
@@ -45,18 +41,13 @@ const prepareForm = values => {
     options: values.options.map((option, index) => {
       return {
         text: option.text,
-        correct_answer: parseInt(values.correct_answer, 10) === index
+        correct: parseInt(values.correct_answer, 10) === index
       };
     }),
     category: values.category,
-    difficulty: values.difficulty
+    ...(values.link && { link: values.link }),
+    ...(values.did_you_know && { did_you_know: values.did_you_know })
   };
-  if (values.link) {
-    form.link = values.link;
-  }
-  if (values.did_you_know) {
-    form.did_you_know = values.did_you_know;
-  }
   return form;
 };
 
@@ -64,7 +55,6 @@ const QuestionInitialValues = {
   title: "",
   options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
   category: "default",
-  difficulty: "default",
   link: "",
   did_you_know: "",
   correct_answer: "default"
@@ -77,8 +67,8 @@ const { TextArea } = Input;
 const ContributeForm = props => {
   const categories = props.categories.map((category, index) => {
     return (
-      <Option key={index} value={category._id}>
-        {category.title}
+      <Option key={`category-${index}`} value={category._id}>
+        {category.name}
       </Option>
     );
   });
@@ -97,7 +87,12 @@ const ContributeForm = props => {
             Proponer una pregunta nueva
           </h1>
           {props.error && (
-            <Alert type="error" message={props.errorMessage} banner />
+            <Alert
+              type="error"
+              message={props.error.message}
+              description={props.error.description}
+              banner
+            />
           )}
           <Formik
             initialValues={QuestionInitialValues}
@@ -170,43 +165,7 @@ const ContributeForm = props => {
                 </Row>
 
                 <Row gutter={16}>
-                  <Col xs={24} md={8}>
-                    <FastField
-                      name="difficulty"
-                      render={({ field, form }) => (
-                        <FormItem
-                          required
-                          label="Dificultad"
-                          hasFeedback
-                          validateStatus={
-                            form.touched.difficulty && form.errors.difficulty
-                              ? "error"
-                              : ""
-                          }
-                          help={
-                            (form.touched.difficulty &&
-                              form.errors.difficulty) ||
-                            ""
-                          }>
-                          <Select
-                            {...field}
-                            disabled={isSubmitting}
-                            defaultValue="default"
-                            onSelect={option =>
-                              setFieldValue("difficulty", option)
-                            }>
-                            <Option value="default" disabled>
-                              Elige una dificultad
-                            </Option>
-                            <Option value="easy">Fácil</Option>
-                            <Option value="medium">Media</Option>
-                            <Option value="hard">Difícil</Option>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
-                  </Col>
-                  <Col xs={24} md={8}>
+                  <Col xs={24} md={12}>
                     <Field
                       name="category"
                       render={({ field, form }) => (
@@ -239,7 +198,7 @@ const ContributeForm = props => {
                       )}
                     />
                   </Col>
-                  <Col xs={24} md={8}>
+                  <Col xs={24} md={12}>
                     <Field
                       name="correct_answer"
                       render={({ field, form }) => (
@@ -268,10 +227,11 @@ const ContributeForm = props => {
                             <Option value="default" disabled>
                               Elige una opción
                             </Option>
-                            <Option value="0">Opción 1</Option>
-                            <Option value="1">Opción 2</Option>
-                            <Option value="2">Opción 3</Option>
-                            <Option value="3">Opción 4</Option>
+                            {[...new Array(4)].map((_, i) => (
+                              <Option key={`option-${i}`} value={String(i)}>
+                                Opción {i + 1}
+                              </Option>
+                            ))}
                           </Select>
                         </FormItem>
                       )}
@@ -326,12 +286,13 @@ const ContributeForm = props => {
                 <Button
                   htmlType="submit"
                   type="primary"
+                  disabled={props.loadingCategories}
                   loading={isSubmitting}
                   style={{ marginRight: "8px" }}>
                   Enviar
                 </Button>
                 <Button
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || props.loadingCategories}
                   onClick={() => resetForm(QuestionInitialValues)}>
                   Limpiar formulario
                 </Button>

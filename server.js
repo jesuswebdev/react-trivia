@@ -1,5 +1,3 @@
-"use strict";
-
 process.env.NODE_ENV = process.env.NODE_ENV || "development";
 
 if (process.env.NODE_ENV === "development") {
@@ -23,5 +21,5 @@ app.get("/*", function(req, res) {
 });
 
 app.listen(process.env.PORT || 8000, () => {
-  console.log("server running at port 8000");
+  console.log(`server running at port ${process.env.PORT || 8000}`);
 });
