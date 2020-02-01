@@ -67,6 +67,12 @@ const ShowQuestion = ({
                 }`
               : "Ya no te quedan mas intentos"}
           </p>
+          {question.did_you_know && (
+            <>
+              <p>¿Sabías qué?</p>
+              <p>{question.did_you_know}</p>
+            </>
+          )}
           {question.link && (
             <p>
               ¿Quieres saber más?{" "}
