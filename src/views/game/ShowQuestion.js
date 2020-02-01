@@ -64,7 +64,7 @@ const ShowQuestion = ({
                   remainingAttempts === 1 ? "" : "n"
                 } ${remainingAttempts} intento${
                   remainingAttempts === 1 ? "" : "s"
-                } para equivocarte`
+                }`
               : "Ya no te quedan mas intentos"}
           </p>
           {question.link && (
