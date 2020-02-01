@@ -59,22 +59,26 @@ const Game = props => {
     );
   };
 
-  const selectOptionHandler = async (id, options) => {
-    if (!timedOut) {
+  const selectOptionHandler = async (id, options, _timedOut) => {
+    const isTimedOut = !!timedOut || !!_timedOut;
+    if (!isTimedOut) {
       setAnswered(true);
     }
     setValidatingAnswer(true);
     const loadingMessage = message.loading(
-      timedOut ? "Actualizando el juego" : "Validando tu respuesta",
+      isTimedOut ? "Actualizando el juego" : "Validando tu respuesta",
       0
     );
     const answerProperties = {
       token: gameState.token,
       question: {
         id: gameState.question.id,
-        selected_option: id,
-        answered: true,
-        duration: new Date().getTime() - questionStart,
+        ...(!isTimedOut && { selected_option: id }),
+        answered: !isTimedOut,
+        duration: isTimedOut
+          ? TIMER_TIME * 1000
+          : new Date().getTime() - questionStart,
+        timed_out: isTimedOut,
         answered_at: new Date().getTime()
       }
     };
@@ -115,35 +119,7 @@ const Game = props => {
 
   const onTimedOut = async () => {
     setTimedOut(true);
-    setValidatingAnswer(true);
-    const loadingMessage = message.loading("Actualizando el juego", 0);
-    const answerProperties = {
-      token: gameState.token,
-      question: {
-        id: gameState.question.id,
-        answered: false,
-        duration: TIMER_TIME * 1000,
-        timed_out: true,
-        answered_at: new Date().getTime()
-      }
-    };
-    try {
-      const { data } = await http.post(
-        `/games/${gameState.game.id}/answer`,
-        answerProperties
-      );
-      setGameState({ ...gameState, ...data });
-      setError(false);
-    } catch (error) {
-      console.error(error);
-      if ((error || {}).message === "Network Error") {
-        setError("network_error");
-        setRetryProperties(answerProperties);
-      }
-    } finally {
-      setValidatingAnswer(false);
-      loadingMessage();
-    }
+    selectOptionHandler(null, null, true);
   };
   const startQuestion = () => {
     setQuestionStage("started");

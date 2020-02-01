@@ -25,14 +25,13 @@ const ShowQuestion = ({
       type="error"
       description={
         <>
-          <p>Tu respuesta no se pudo enviar</p>
           <p>
             <span
               style={{ color: "#1890ff", cursor: "pointer" }}
               onClick={retry}>
               Haz click aquí
             </span>{" "}
-            para intentar otra vez
+            para volver a intentar
           </p>
         </>
       }
