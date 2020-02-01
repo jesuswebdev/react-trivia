@@ -67,7 +67,7 @@ const { TextArea } = Input;
 const ContributeForm = props => {
   const categories = props.categories.map((category, index) => {
     return (
-      <Option key={index} value={category._id}>
+      <Option key={`category-${index}`} value={category._id}>
         {category.name}
       </Option>
     );
@@ -87,7 +87,12 @@ const ContributeForm = props => {
             Proponer una pregunta nueva
           </h1>
           {props.error && (
-            <Alert type="error" message={props.errorMessage} banner />
+            <Alert
+              type="error"
+              message={props.error.message}
+              description={props.error.description}
+              banner
+            />
           )}
           <Formik
             initialValues={QuestionInitialValues}
@@ -222,10 +227,11 @@ const ContributeForm = props => {
                             <Option value="default" disabled>
                               Elige una opción
                             </Option>
-                            <Option value="0">Opción 1</Option>
-                            <Option value="1">Opción 2</Option>
-                            <Option value="2">Opción 3</Option>
-                            <Option value="3">Opción 4</Option>
+                            {[...new Array(4)].map((_, i) => (
+                              <Option key={`option-${i}`} value={String(i)}>
+                                Opción {i + 1}
+                              </Option>
+                            ))}
                           </Select>
                         </FormItem>
                       )}
@@ -280,12 +286,13 @@ const ContributeForm = props => {
                 <Button
                   htmlType="submit"
                   type="primary"
+                  disabled={props.loadingCategories}
                   loading={isSubmitting}
                   style={{ marginRight: "8px" }}>
                   Enviar
                 </Button>
                 <Button
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || props.loadingCategories}
                   onClick={() => resetForm(QuestionInitialValues)}>
                   Limpiar formulario
                 </Button>
