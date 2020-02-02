@@ -78,13 +78,13 @@ export class NewGame extends Component {
               <Formik
                 enableReinitialize
                 initialValues={{ name: localStorage.getItem("username") || "" }}
-                validationSchema={{
+                validationSchema={Yup.object().shape({
                   name: Yup.string()
                     .trim()
-                    .min(2)
-                    .max(32)
-                    .required()
-                }}
+                    .min(2, "El nombre es muy corto")
+                    .max(32, "El nombre es muy largo")
+                    .required("Debes escribir un nombre de usuario")
+                })}
                 onSubmit={this.onSubmitHandler}
                 render={props => {
                   return (
