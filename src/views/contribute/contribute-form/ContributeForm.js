@@ -283,19 +283,25 @@ const ContributeForm = props => {
                   )}
                 />
 
-                <Button
-                  htmlType="submit"
-                  type="primary"
-                  disabled={props.loadingCategories}
-                  loading={isSubmitting}
-                  style={{ marginRight: "8px" }}>
-                  Enviar
-                </Button>
-                <Button
-                  disabled={isSubmitting || props.loadingCategories}
-                  onClick={() => resetForm(QuestionInitialValues)}>
-                  Limpiar formulario
-                </Button>
+                <Row type="flex">
+                  <Col span={8} style={{ width: "fit-content" }}>
+                    <Button
+                      htmlType="submit"
+                      type="primary"
+                      disabled={props.loadingCategories}
+                      loading={isSubmitting}
+                      style={{ marginRight: "8px" }}>
+                      Enviar
+                    </Button>
+                  </Col>
+                  <Col span={16} style={{ width: "fit-content" }}>
+                    <Button
+                      disabled={isSubmitting || props.loadingCategories}
+                      onClick={() => resetForm(QuestionInitialValues)}>
+                      Limpiar formulario
+                    </Button>
+                  </Col>
+                </Row>
               </Form>
             )}
           </Formik>
