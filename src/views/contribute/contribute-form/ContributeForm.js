@@ -284,7 +284,9 @@ const ContributeForm = props => {
                 />
 
                 <Row type="flex">
-                  <Col span={8} style={{ width: "fit-content" }}>
+                  <Col
+                    span={8}
+                    style={{ width: "fit-content", padding: "8px 0px" }}>
                     <Button
                       htmlType="submit"
                       type="primary"
@@ -294,7 +296,9 @@ const ContributeForm = props => {
                       Enviar
                     </Button>
                   </Col>
-                  <Col span={16} style={{ width: "fit-content" }}>
+                  <Col
+                    span={16}
+                    style={{ width: "fit-content", padding: "8px 0px" }}>
                     <Button
                       disabled={isSubmitting || props.loadingCategories}
                       onClick={() => resetForm(QuestionInitialValues)}>
