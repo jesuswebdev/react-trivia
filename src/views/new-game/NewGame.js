@@ -24,7 +24,7 @@ export class NewGame extends Component {
     response: null
   };
 
-  onSubmitHandler = ({ name }) => {
+  onSubmitHandler = ({ name }, { setSubmitting }) => {
     const loadingMessage = message.loading("Creando el juego...", 0);
     this.setState({ loading: true, error: false }, async () => {
       let response;
@@ -38,6 +38,7 @@ export class NewGame extends Component {
       } finally {
         loadingMessage();
         this.setState({ loading: false, error: errored, response });
+        setSubmitting(false);
       }
     });
   };
@@ -78,13 +79,17 @@ export class NewGame extends Component {
               <Formik
                 enableReinitialize
                 initialValues={{ name: localStorage.getItem("username") || "" }}
-                validationSchema={{
+                validationSchema={Yup.object().shape({
                   name: Yup.string()
                     .trim()
-                    .min(2)
-                    .max(32)
-                    .required()
-                }}
+                    .matches(
+                      new RegExp(/^[a-zA-Z\s*áéíóúÁÉÍÓÚÑñ]+$/),
+                      "El nombre solo admite letras"
+                    )
+                    .min(2, "El nombre es muy corto")
+                    .max(32, "El nombre es muy largo")
+                    .required("El nombre no puede quedar vacío")
+                })}
                 onSubmit={this.onSubmitHandler}
                 render={props => {
                   return (
