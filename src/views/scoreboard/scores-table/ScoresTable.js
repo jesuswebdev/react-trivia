@@ -27,7 +27,7 @@ const columns = [
   {
     title: "Ir al juego",
     dataIndex: "_id",
-    width: 50,
+    width: 100,
     render: (id, game) => {
       return (
         <Link

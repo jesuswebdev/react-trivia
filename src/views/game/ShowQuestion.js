@@ -2,7 +2,7 @@ import React from "react";
 import Timer from "../../components/timer/Timer";
 import QuestionOptions from "./question/Options";
 import QuestionTitle from "./question/Title";
-import { Row, Col, Button, Alert, Icon } from "antd";
+import { Row, Col, Button, Alert } from "antd";
 
 const ShowQuestion = ({
   answered,
@@ -87,22 +87,35 @@ const ShowQuestion = ({
   );
   return (
     <Row type="flex" justify="center">
-      <Col span={20}>
+      <Col span={22}>
         {response || timedOut || error ? (
-          <Row style={{ minHeight: "174px" }}>
-            <Col span={6} />
-            <Col span={12}>{error ? networkErrorAlert : alert} </Col>
-            <Col span={6} style={{ textAlign: "right" }}>
-              {!error && (
-                <Button
-                  type="primary"
-                  onClick={nextQuestion}
-                  disabled={validatingAnswer}>
-                  Continuar <Icon type="right" />
-                </Button>
-              )}
-            </Col>
-          </Row>
+          <>
+            <Row
+              style={{ height: "fit-content", padding: "8px 0px" }}
+              type="flex">
+              <Col
+                xs={{ span: 24 }}
+                sm={{ span: 24 }}
+                md={{ span: 14, offset: 5 }}
+                xl={{ span: 12, offset: 6 }}>
+                {error ? networkErrorAlert : alert}{" "}
+              </Col>
+            </Row>
+            <Row
+              style={{ height: "fit-content", padding: "8px 0px 16px 0px" }}
+              type="flex">
+              <Col span={24} style={{ textAlign: "center" }}>
+                {!error && (
+                  <Button
+                    type="primary"
+                    onClick={nextQuestion}
+                    disabled={validatingAnswer}>
+                    {remainingAttempts ? "Siguiente pregunta" : "Continuar"}
+                  </Button>
+                )}
+              </Col>
+            </Row>
+          </>
         ) : (
           <Timer onTimedOut={onTimedOut} stop={answered} />
         )}
