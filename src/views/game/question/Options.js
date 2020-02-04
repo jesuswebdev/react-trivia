@@ -2,12 +2,13 @@ import React from "react";
 import { Row, Col, Button } from "antd";
 
 const QuestionOptions = ({
-  options,
+  options = [...new Array(4)],
   selectOptionHandler,
   answered,
   validatingAnswer,
   timedOut,
-  response = {}
+  response = {},
+  loading
 }) => {
   const getButtonColor = (answered, optionId, response) => {
     const correct = { backgroundColor: "#52c41a", borderColor: "#52c41a" };
@@ -38,17 +39,18 @@ const QuestionOptions = ({
     }
     return {};
   };
-  const optionsButtons = options.map(q => {
+  const optionsButtons = options.map((q = {}, index) => {
     return (
-      <Col xs={24} sm={24} md={12} key={q.option_id}>
+      <Col xs={24} sm={24} md={12} key={`option-${index}`}>
         <Button
+          loading={loading}
           style={{
             margin: "8px 0px",
             ...getButtonColor(answered, q.option_id, response)
           }}
           id={q.option_id}
           onClick={() => {
-            if (answered) {
+            if (answered || loading) {
               return;
             }
             selectOptionHandler(q.option_id);
@@ -63,7 +65,7 @@ const QuestionOptions = ({
             timedOut
           }
           block>
-          {q.text}
+          {loading ? " " : q.text}
         </Button>
       </Col>
     );
