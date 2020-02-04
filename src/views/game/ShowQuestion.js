@@ -16,7 +16,9 @@ const ShowQuestion = ({
   remainingAttempts,
   response,
   error,
-  retry
+  retry,
+  start,
+  loading
 }) => {
   const networkErrorAlert = (
     <Alert
@@ -67,16 +69,19 @@ const ShowQuestion = ({
                 }`
               : "Ya no te quedan mas intentos"}
           </p>
-          {question.did_you_know && (
+          {(question || {}).did_you_know && (
             <>
               <p>¿Sabías qué?</p>
-              <p>{question.did_you_know}</p>
+              <p>{(question || {}).did_you_know}</p>
             </>
           )}
-          {question.link && (
+          {(question || {}).link && (
             <p>
               ¿Quieres saber más?{" "}
-              <a href={question.link} target="_blank" rel="noopener noreferrer">
+              <a
+                href={(question || {}).link}
+                target="_blank"
+                rel="noopener noreferrer">
                 Haz click aquí
               </a>
             </p>
@@ -88,7 +93,7 @@ const ShowQuestion = ({
   return (
     <Row type="flex" justify="center">
       <Col span={22}>
-        {response || timedOut || error ? (
+        {(response || timedOut || error) && !loading ? (
           <>
             <Row
               style={{ height: "fit-content", padding: "8px 0px" }}
@@ -116,12 +121,24 @@ const ShowQuestion = ({
               </Col>
             </Row>
           </>
+        ) : loading ? (
+          <div style={{ height: "174px" }} />
         ) : (
-          <Timer onTimedOut={onTimedOut} stop={answered} />
+          <Timer
+            onTimedOut={onTimedOut}
+            stop={answered}
+            start={start}
+            loading={loading}
+          />
         )}
-        <QuestionTitle title={question.title} />
+        <QuestionTitle
+          category={(question || {}).category}
+          title={(question || {}).title}
+          loading={loading}
+        />
         <QuestionOptions
-          options={question.options}
+          loading={loading}
+          options={(question || {}).options}
           selectOptionHandler={selectOptionHandler}
           answered={answered}
           selectedOption={selectedOption}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
-import StartQuestion from "./StartQuestion";
 import ShowQuestion from "./ShowQuestion";
 import GameFinished from "./GameFinished";
 import { TIMER_TIME } from "../../config";
@@ -9,20 +8,21 @@ import { message } from "antd";
 
 const Game = props => {
   const [gameState, setGameState] = useState(null);
-  const [questionStage, setQuestionStage] = useState("start-question"); //start-question, started, answered
   const [validatingAnswer, setValidatingAnswer] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
   const [answered, setAnswered] = useState(false);
   const [questionStart, setQuestionStart] = useState(0);
-  const [loadingQuestion, setLoadingQuestion] = useState(false);
+  const [loadingQuestion, setLoadingQuestion] = useState(true);
   const [redirectOnError, setRedirectOnError] = useState(false);
   const [gameFinished, setGameFinished] = useState(false);
   const [error, setError] = useState(false);
   const [retryProperties, setRetryProperties] = useState(undefined);
 
   const loadQuestion = async state => {
+    const loadingQuestionMessage = message.loading("Cargando pregunta...");
     try {
       setLoadingQuestion(true);
+      setQuestionStart(0);
       const { data } = await http.get(
         `/games/${state.game.id}/next-question?token=${state.token}`
       );
@@ -32,25 +32,17 @@ const Game = props => {
       setRedirectOnError(true);
     } finally {
       setLoadingQuestion(false);
+      loadingQuestionMessage();
     }
   };
 
   useEffect(() => {
+    if (!props.location.state) {
+      return setRedirectOnError(true);
+    }
     loadQuestion(props.location.state);
     props.history.replace();
   }, []);
-
-  useEffect(
-    () => {
-      if (questionStage === "started") {
-        setQuestionStart(new Date().getTime());
-      }
-      if (questionStage === "start-question") {
-        setQuestionStart(0);
-      }
-    },
-    [questionStage]
-  );
 
   const retryHandler = async () => {
     return await selectOptionHandler(
@@ -61,6 +53,7 @@ const Game = props => {
 
   const selectOptionHandler = async (id, options, _timedOut) => {
     const isTimedOut = !!timedOut || !!_timedOut;
+    const duration = new Date().getTime() - questionStart;
     if (!isTimedOut) {
       setAnswered(true);
     }
@@ -75,9 +68,7 @@ const Game = props => {
         id: gameState.question.id,
         ...(!isTimedOut && { selected_option: id }),
         answered: !isTimedOut,
-        duration: isTimedOut
-          ? TIMER_TIME * 1000
-          : new Date().getTime() - questionStart,
+        duration: isTimedOut ? TIMER_TIME * 1000 : duration,
         timed_out: isTimedOut,
         answered_at: new Date().getTime()
       }
@@ -112,7 +103,6 @@ const Game = props => {
     if (!gameState.game.remaining_attempts) {
       return setGameFinished(true);
     }
-    setQuestionStage("start-question");
     loadQuestion(gameState);
     resetState();
   };
@@ -122,7 +112,7 @@ const Game = props => {
     selectOptionHandler(null, null, true);
   };
   const startQuestion = () => {
-    setQuestionStage("started");
+    setQuestionStart(new Date().getTime());
   };
   if (redirectOnError) {
     return <Redirect to="/" />;
@@ -131,33 +121,23 @@ const Game = props => {
   if (gameFinished) {
     return <GameFinished game={gameState.game} />;
   }
-
-  if (questionStage === "start-question") {
-    return (
-      <StartQuestion
-        question={(gameState || {}).question}
-        start={startQuestion}
-        loading={loadingQuestion}
-      />
-    );
-  }
-  if (questionStage === "started") {
-    return (
-      <ShowQuestion
-        question={gameState.question}
-        selectOptionHandler={selectOptionHandler}
-        onTimedOut={onTimedOut}
-        validatingAnswer={validatingAnswer}
-        timedOut={timedOut}
-        answered={answered}
-        remainingAttempts={gameState.game.remaining_attempts}
-        response={gameState.answer}
-        nextQuestion={onClickNextQuestion}
-        error={error}
-        retry={retryHandler}
-      />
-    );
-  }
+  return (
+    <ShowQuestion
+      start={startQuestion}
+      loading={loadingQuestion}
+      question={(gameState || {}).question}
+      selectOptionHandler={selectOptionHandler}
+      onTimedOut={onTimedOut}
+      validatingAnswer={validatingAnswer}
+      timedOut={timedOut}
+      answered={answered}
+      remainingAttempts={((gameState || {}).game || {}).remaining_attempts}
+      response={(gameState || {}).answer}
+      nextQuestion={onClickNextQuestion}
+      error={error}
+      retry={retryHandler}
+    />
+  );
 };
 
 export default Game;

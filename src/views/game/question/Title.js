@@ -1,10 +1,16 @@
 import React from "react";
-import { Card } from "antd";
+import { Card, Spin } from "antd";
 
-const QuestionTitle = ({ title }) => {
+const QuestionTitle = ({ title, loading }) => {
   return (
     <Card style={{ marginBottom: "12px" }}>
-      <h1 style={{ fontSize: "24px", textAlign: "center" }}>{title}</h1>
+      {loading ? (
+        <div style={{ textAlign: "center" }}>
+          <Spin />
+        </div>
+      ) : (
+        <h1 style={{ fontSize: "24px", textAlign: "center" }}>{title}</h1>
+      )}
     </Card>
   );
 };

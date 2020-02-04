@@ -4,11 +4,12 @@ import { Progress } from "antd";
 
 const secondsToPercentage = seconds => Math.floor((seconds / TIMER_TIME) * 100);
 
-export const Timer = ({ onTimedOut, stop }) => {
+export const Timer = ({ onTimedOut, start, stop }) => {
   const [seconds, setSeconds] = useState(TIMER_TIME);
   const timeoutId = useRef();
   const intervalId = useRef();
   useEffect(() => {
+    start();
     setSeconds(TIMER_TIME);
     const tId = setTimeout(() => {
       clearInterval(intervalId.current);
