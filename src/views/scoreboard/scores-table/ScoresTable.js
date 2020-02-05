@@ -19,12 +19,6 @@ const columns = [
     render: duration => parseGameDuration(duration)
   },
   {
-    title: "Fecha",
-    dataIndex: "createdAt",
-    width: 170,
-    render: date => transformDate(date)
-  },
-  {
     title: "Ir al juego",
     dataIndex: "_id",
     width: 100,
