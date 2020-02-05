@@ -8,7 +8,11 @@ export const Timer = ({ onTimedOut, start, stop }) => {
   const [seconds, setSeconds] = useState(TIMER_TIME);
   const timeoutId = useRef();
   const intervalId = useRef();
+  const onBlurWindow = () => {
+    onTimedOut();
+  };
   useEffect(() => {
+    window.addEventListener("blur", onBlurWindow);
     start();
     setSeconds(TIMER_TIME);
     const tId = setTimeout(() => {
@@ -19,6 +23,7 @@ export const Timer = ({ onTimedOut, start, stop }) => {
     timeoutId.current = tId;
 
     return () => {
+      window.removeEventListener("blur", onBlurWindow);
       clearTimeout(timeoutId.current);
       clearInterval(intervalId.current);
     };
@@ -42,6 +47,7 @@ export const Timer = ({ onTimedOut, start, stop }) => {
   useEffect(
     () => {
       if (stop) {
+        window.removeEventListener("blur", onBlurWindow);
         clearTimeout(timeoutId.current);
         clearInterval(intervalId.current);
       }
