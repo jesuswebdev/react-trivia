@@ -17,12 +17,11 @@ const addZero = number => {
 
 export const transformDate = date => {
   const newDate = new Date(date);
-  const fullDate = `${addZero(newDate.getHours())}:${addZero(
-    newDate.getMinutes()
-  )} del 
-  ${addZero(newDate.getDate())}-${addZero(
+  const fullDate = `${addZero(newDate.getDate())}/${addZero(
     newDate.getMonth() + 1
-  )}-${newDate.getFullYear()}`;
+  )}/${newDate.getFullYear()} @ ${addZero(newDate.getHours())}:${addZero(
+    newDate.getMinutes()
+  )}`;
   return fullDate;
 };
 
