@@ -22,9 +22,7 @@ class Contribute extends Component {
       { loadingCategories: true, error: false, errorMessage: "" },
       async () => {
         try {
-          const {
-            data: { categories }
-          } = await http.get("/category");
+          const { data: categories } = await http.get("/category");
           this.setState({ categories, loadingCategories: false });
         } catch (error) {
           this.setState({
