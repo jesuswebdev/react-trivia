@@ -9,7 +9,10 @@ const QuestionTitle = ({ title, loading }) => {
           <Spin />
         </div>
       ) : (
-        <h1 style={{ fontSize: "24px", textAlign: "center" }}>{title}</h1>
+        <h1
+          style={{ fontSize: "24px", textAlign: "center", userSelect: "none" }}>
+          {title}
+        </h1>
       )}
     </Card>
   );

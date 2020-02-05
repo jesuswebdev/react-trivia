@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Table, Alert, Breadcrumb } from "antd";
 
-import { transformDate, parseGameDuration } from "../../../utils";
+import { parseGameDuration } from "../../../utils";
 
 const columns = [
   { title: "#", key: "position", dataIndex: "position", width: 50 },
@@ -17,12 +17,6 @@ const columns = [
     dataIndex: "duration",
     width: 150,
     render: duration => parseGameDuration(duration)
-  },
-  {
-    title: "Fecha",
-    dataIndex: "createdAt",
-    width: 170,
-    render: date => transformDate(date)
   },
   {
     title: "Ir al juego",
@@ -42,7 +36,7 @@ const columns = [
 const ScoresTable = props => {
   return (
     <Row type="flex" justify="center">
-      <Col span={22}>
+      <Col span={20}>
         <Breadcrumb style={{ paddingBottom: "16px" }}>
           <Breadcrumb.Item>
             <Link to="/">Inicio</Link>
