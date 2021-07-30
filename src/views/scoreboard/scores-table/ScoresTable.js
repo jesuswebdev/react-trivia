@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Table, Alert, Breadcrumb } from "antd";
 
-import { parseGameDuration } from "../../../utils";
+// import { parseGameDuration } from "../../../utils";
 
 const columns = [
   { title: "#", key: "position", dataIndex: "position", width: 50 },
@@ -11,26 +11,26 @@ const columns = [
     title: "Respuesta Correctas",
     dataIndex: "total_correct_answers",
     width: 171
-  },
-  {
-    title: "Duración del Juego",
-    dataIndex: "duration",
-    width: 150,
-    render: duration => parseGameDuration(duration)
-  },
-  {
-    title: "Ir al juego",
-    dataIndex: "_id",
-    width: 100,
-    render: (id, game) => {
-      return (
-        <Link
-          to={{ pathname: `/juego/${id}`, state: { position: game.position } }}>
-          Ir
-        </Link>
-      );
-    }
   }
+  // {
+  //   title: "Duración del Juego",
+  //   dataIndex: "duration",
+  //   width: 150,
+  //   render: duration => parseGameDuration(duration)
+  // },
+  // {
+  //   title: "Ir al juego",
+  //   dataIndex: "_id",
+  //   width: 100,
+  //   render: (id, game) => {
+  //     return (
+  //       <Link
+  //         to={{ pathname: `/juego/${id}`, state: { position: game.position } }}>
+  //         Ir
+  //       </Link>
+  //     );
+  //   }
+  // }
 ];
 
 const ScoresTable = props => {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Button } from "antd";
-import { parseGameDuration } from "../../utils";
+// import { parseGameDuration } from "../../utils";
 
 const GameFinished = ({ game }) => {
   console.log("props", game);
@@ -25,9 +25,9 @@ const GameFinished = ({ game }) => {
             Respondiste {game.total_correct_answers} preguntas correctamente
           </h1>
 
-          <h1 style={subtitle}>
+          {/* <h1 style={subtitle}>
             Tu tiempo: {parseGameDuration(game.duration)}
-          </h1>
+          </h1> */}
 
           <Link to="/nuevo">
             <Button
