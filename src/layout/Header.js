@@ -36,7 +36,7 @@ const AppHeader = props => {
               )}
               {path !== "/top" && (
                 <MenuItem>
-                  <Link to="/top">Top 100</Link>
+                  <Link to="/top">Top 10</Link>
                 </MenuItem>
               )}
               {path !== "/contribuir" && (
