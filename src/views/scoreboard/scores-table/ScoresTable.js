@@ -8,7 +8,7 @@ const columns = [
   { title: "#", key: "position", dataIndex: "position", width: 50 },
   { title: "Jugador", dataIndex: "user", width: 250 },
   {
-    title: "Respuesta Correctas",
+    title: "Respuestas Correctas",
     dataIndex: "total_correct_answers",
     width: 171
   }
